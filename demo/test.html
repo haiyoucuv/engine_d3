@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="full-screen" content="true" />
+    <meta name="screen-orientation" content="portrait" />
+    <meta name="x5-fullscreen" content="true" />
+    <meta name="360-fullscreen" content="true" />
+    
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script src="../debug/engine.js"></script>
+</head>
+<body>
+    
+    
+    <script>
+
+        with (engine) {
+
+            let game = new Game();
+
+            let group = new Group();
+
+            game.addChild(group);
+
+            let image = new Image();
+            image.src = './img/test1.jpeg';
+            image.width = 100;
+            image.height = 100;
+
+            let image2 = new Image();
+            image2.src = './img/test2.jpeg';
+            image2.width = image2.height = 100;
+            image2.x = image2.y = 50;
+            image.addChild(image2);
+
+            let image3 = new Image();
+            image3.src = './img/test3.jpeg';
+            image3.width = image3.height = 100;
+            image3.x = image3.y = 50;
+            image2.addChild(image3);
+
+            let dx = 100;
+            let dy = 100;
+            image.update = function (dt) {
+                if (image.x < 0 || image.x > game.gameStage.width - image.width) {
+                    dx = -dx;
+                }
+                if (image.y < 0 || image.y > game.gameStage.height - image.height) {
+                    dy = -dy;
+                }
+
+                image.x += dx * dt;
+                image.y += dy * dt;
+            }
+
+            group.addChild(image);
+        }
+    
+    </script>
+
+
+</body>
+</html>

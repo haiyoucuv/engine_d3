@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="a363f917-efa6-42f5-b290-8e66e76c061d" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+        <option value="MarkDown" />
+        <option value="HTML File" />
+        <option value="TypeScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="dev" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="MERGE" />
+  </component>
+  <component name="ProjectId" id="1ZYzLmPKm3UfhIZLkr8RtiZwhUf" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/lib" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="nodejs_package_manager_path" value="yarn" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+    <property name="settings.editor.selected.configurable" value="copyright" />
+    <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/UI" />
+      <recent name="$PROJECT_DIR$/demo/img" />
+      <recent name="$PROJECT_DIR$/demo" />
+      <recent name="$PROJECT_DIR$/src/lib" />
+      <recent name="$PROJECT_DIR$/debug" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/lib" />
+      <recent name="$PROJECT_DIR$/src/zeroing/game-warpper/mvvm" />
+      <recent name="$PROJECT_DIR$/book/engine" />
+    </key>
+  </component>
+  <component name="RunManager" selected="npm.dev">
+    <configuration name="debug" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="debug" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="declare" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="declare" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="preprocess" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="preprocess" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="ts" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="ts" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="npm.dev" />
+        <item itemvalue="npm.ts" />
+        <item itemvalue="npm.preprocess" />
+        <item itemvalue="npm.declare" />
+        <item itemvalue="npm.debug" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a363f917-efa6-42f5-b290-8e66e76c061d" name="Default Changelist" comment="" />
+      <created>1585030761378</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1585030761378</updated>
+      <workItem from="1585030763664" duration="83000" />
+      <workItem from="1585309307077" duration="223000" />
+      <workItem from="1585532868135" duration="9432000" />
+      <workItem from="1585548073784" duration="13304000" />
+      <workItem from="1585619020647" duration="19493000" />
+      <workItem from="1585705357868" duration="3415000" />
+      <workItem from="1585809744255" duration="3460000" />
+      <workItem from="1585879466515" duration="16665000" />
+      <workItem from="1586224104828" duration="8506000" />
+      <workItem from="1586414881820" duration="3996000" />
+      <workItem from="1586488052078" duration="2983000" />
+      <workItem from="1586508741055" duration="875000" />
+      <workItem from="1586512194603" duration="17000" />
+      <workItem from="1586512428197" duration="1078000" />
+      <workItem from="1586750167354" duration="1386000" />
+      <workItem from="1586832966354" duration="17259000" />
+      <workItem from="1586915131468" duration="17366000" />
+      <workItem from="1586970547836" duration="4000" />
+      <workItem from="1587001399822" duration="2758000" />
+      <workItem from="1587006105423" duration="3040000" />
+      <workItem from="1587037618949" duration="599000" />
+      <workItem from="1587088026702" duration="14465000" />
+      <workItem from="1587193648244" duration="11740000" />
+      <workItem from="1587224345938" duration="141000" />
+      <workItem from="1587355049281" duration="1821000" />
+      <workItem from="1587452856105" duration="175000" />
+      <workItem from="1587520357116" duration="17507000" />
+      <workItem from="1587606248943" duration="80000" />
+      <workItem from="1587606438033" duration="14026000" />
+      <workItem from="1587696728690" duration="5561000" />
+      <workItem from="1587713741312" duration="310000" />
+      <workItem from="1588815904044" duration="9695000" />
+      <workItem from="1588902773059" duration="2463000" />
+      <workItem from="1589161740196" duration="2845000" />
+      <workItem from="1589352024656" duration="9000" />
+      <workItem from="1589352056169" duration="10940000" />
+      <workItem from="1589363085653" duration="9832000" />
+      <workItem from="1589382496921" duration="344000" />
+      <workItem from="1590249647407" duration="94000" />
+      <workItem from="1599220397421" duration="23000" />
+      <workItem from="1599220434396" duration="4854000" />
+      <workItem from="1599385621573" duration="1115000" />
+      <workItem from="1599387458394" duration="13000" />
+      <workItem from="1599389761360" duration="20000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state width="376" height="1057" key="GridCell.Tab.0.bottom" timestamp="1599220781670">
+      <screen x="30" y="23" width="1890" height="1177" />
+    </state>
+    <state width="376" height="1057" key="GridCell.Tab.0.bottom/30.23.1890.1177@30.23.1890.1177" timestamp="1599220781670" />
+    <state width="376" height="1057" key="GridCell.Tab.0.center" timestamp="1599220781669">
+      <screen x="30" y="23" width="1890" height="1177" />
+    </state>
+    <state width="376" height="1057" key="GridCell.Tab.0.center/30.23.1890.1177@30.23.1890.1177" timestamp="1599220781669" />
+    <state width="376" height="1057" key="GridCell.Tab.0.left" timestamp="1599220781669">
+      <screen x="30" y="23" width="1890" height="1177" />
+    </state>
+    <state width="376" height="1057" key="GridCell.Tab.0.left/30.23.1890.1177@30.23.1890.1177" timestamp="1599220781669" />
+    <state width="376" height="1057" key="GridCell.Tab.0.right" timestamp="1599220781670">
+      <screen x="30" y="23" width="1890" height="1177" />
+    </state>
+    <state width="376" height="1057" key="GridCell.Tab.0.right/30.23.1890.1177@30.23.1890.1177" timestamp="1599220781670" />
+  </component>
+</project>

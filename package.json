@@ -1,0 +1,28 @@
+{
+  "name": "d3",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "dependencies": {
+    "rollup": "^2.26.10"
+  },
+  "devDependencies": {
+    "dts-bundle": "^0.7.3",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-progress": "^1.1.2",
+    "rollup-plugin-typescript": "^1.0.1",
+    "rollup-plugin-typescript2": "^0.25.2",
+    "rollup-plugin-uglify": "^6.0.4",
+    "typescript": "^3.9.7"
+  },
+  "scripts": {
+    "declare": "node scripts/declare.js src/index.ts",
+    "dev": "rollup -c -m -w",
+    "build": "rollup -c -o dist/engine.js",
+    "ts": "dts-bundle --name engine --main types/src/index.d.ts --out ../../dist/index.d.ts"
+  },
+  "author": "",
+  "license": "ISC"
+}
