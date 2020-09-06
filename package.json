@@ -1,5 +1,5 @@
 {
-  "name": "d3",
+  "name": "hycv_d3",
   "version": "0.1.0",
   "description": "",
   "main": "index.js",
@@ -20,7 +20,7 @@
   "scripts": {
     "declare": "node scripts/declare.js src/index.ts",
     "dev": "rollup -c -m -w",
-    "build": "rollup -c -o dist/engine.js",
+    "build": "rollup -c -o dist/hycv.js",
     "ts": "dts-bundle --name engine --main types/src/index.d.ts --out ../../dist/index.d.ts"
   },
   "author": "",

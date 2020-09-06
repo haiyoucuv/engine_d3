@@ -4,228 +4,301 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('tslib')) :
     typeof define === 'function' && define.amd ? define(['exports', 'tslib'], factory) :
-    (global = global || self, factory(global.engine = {}, global.tslib));
-}(this, (function (exports, tslib_1) { 'use strict';
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.hycv = {}, global.tslib));
+}(this, (function (exports, tslib) { 'use strict';
 
-    var BaseObject = (function () {
-        function BaseObject() {
-            this.children = [];
-            this._name = '';
-            this._parent = null;
-            this._x = 0;
-            this._y = 0;
-            this._width = 0;
-            this._height = 0;
+    var Vector3 = (function () {
+        function Vector3(x, y, z) {
+            if (x === void 0) { x = 0; }
+            if (y === void 0) { y = 0; }
+            if (z === void 0) { z = 0; }
+            this.x = x;
+            this.y = y;
+            this.z = z;
         }
-        BaseObject.prototype.init = function () {
-            this.style = this.entity.style;
-            this.style.position = 'absolute';
+        Object.defineProperty(Vector3.prototype, "length", {
+            get: function () {
+                return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Vector3.clone = function (v) {
+            return new Vector3().copy(v);
         };
-        BaseObject.prototype.start = function () {
+        Vector3.prototype.set = function (x, y, z) {
+            if (x === void 0) { x = 0; }
+            if (y === void 0) { y = 0; }
+            if (z === void 0) { z = 0; }
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            return this;
         };
-        BaseObject.prototype.update = function (dt) {
-            this.children.forEach(function (v) { return v.update(dt); });
+        Vector3.prototype.copy = function (v) {
+            return this.set(v.x, v.y, v.z);
         };
-        BaseObject.prototype.afterUpdate = function (dt) {
-            this.children.forEach(function (v) { return v.afterUpdate(dt); });
-        };
-        BaseObject.prototype.destroy = function () {
-        };
-        BaseObject.prototype.hasChild = function () {
-            return this.children.length > 0;
-        };
-        BaseObject.prototype.addChild = function (child) {
-            if (child.parent) {
-                throw "这个child已经有parent了";
+        Vector3.prototype.add = function (value) {
+            if (value instanceof Vector3) {
+                this.x += value.x;
+                this.y += value.y;
+                this.z += value.z;
+                return this;
             }
-            if (this.children.length > 0) {
-                this.entity.insertBefore(child.entity, this.children[0].entity);
+            this.x += value;
+            this.y += value;
+            this.z += value;
+            return this;
+        };
+        Vector3.prototype.adds = function () {
+            var _this = this;
+            var values = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                values[_i] = arguments[_i];
+            }
+            values.forEach(function (value) {
+                _this.add(value);
+            });
+            return this;
+        };
+        Vector3.prototype.addScaled = function (value, scale) {
+            this.sub(value).scale(scale);
+            return this;
+        };
+        Vector3.prototype.sub = function (value) {
+            if (value instanceof Vector3) {
+                this.x -= value.x;
+                this.y -= value.y;
+                this.z -= value.z;
+                return this;
+            }
+            this.x -= value;
+            this.y -= value;
+            this.z -= value;
+            return this;
+        };
+        Vector3.prototype.subs = function () {
+            var _this = this;
+            var values = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                values[_i] = arguments[_i];
+            }
+            values.forEach(function (value) {
+                _this.sub(value);
+            });
+            return this;
+        };
+        Vector3.prototype.scale = function (value) {
+            this.x *= value;
+            this.y *= value;
+            this.z *= value;
+            return this;
+        };
+        Vector3.prototype.scales = function () {
+            var _this = this;
+            var values = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                values[_i] = arguments[_i];
+            }
+            values.forEach(function (value) {
+                _this.scale(value);
+            });
+            return this;
+        };
+        Vector3.prototype.divide = function (value) {
+            if (value instanceof Vector3) {
+                this.x /= value.x;
+                this.y /= value.y;
+                this.z /= value.z;
+                return this;
+            }
+            this.x /= value;
+            this.y /= value;
+            this.z /= value;
+            return this;
+        };
+        Vector3.prototype.divides = function () {
+            var _this = this;
+            var values = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                values[_i] = arguments[_i];
+            }
+            values.forEach(function (value) {
+                _this.divide(value);
+            });
+            return this;
+        };
+        Vector3.prototype.dot = function (v) {
+            return this.x * v.x + this.y * v.y + this.z * v.z;
+        };
+        Vector3.prototype.crossVector = function (v) {
+            this.x = this.y * v.z - this.z * v.y;
+            this.y = this.z * v.x - this.x * v.z;
+            this.z = this.x * v.y - this.y * v.x;
+            return this;
+        };
+        Vector3.prototype.cross = function (v1, v2) {
+            return new Vector3().copy(v1).crossVector(v2);
+        };
+        Vector3.prototype.normalize = function () {
+            return this.scale(1 / (this.length || 1));
+        };
+        return Vector3;
+    }());
+
+    var EventDispatcher = (function () {
+        function EventDispatcher() {
+            this._listeners = {};
+        }
+        EventDispatcher.prototype.addEventListener = function (type, listener) {
+            if (this._listeners === undefined)
+                this._listeners = {};
+            var listeners = this._listeners;
+            if (listeners[type] === undefined) {
+                listeners[type] = [];
+            }
+            if (listeners[type].indexOf(listener) === -1) {
+                listeners[type].push(listener);
+            }
+        };
+        EventDispatcher.prototype.hasEventListener = function (type, listener) {
+            if (this._listeners === undefined)
+                return false;
+            var listeners = this._listeners;
+            return listeners[type] !== undefined && listeners[type].indexOf(listener) !== -1;
+        };
+        EventDispatcher.prototype.removeEventListener = function (type, listener) {
+            if (this._listeners === undefined)
+                return;
+            var listeners = this._listeners;
+            var listenerArray = listeners[type];
+            if (listenerArray !== undefined) {
+                var index = listenerArray.indexOf(listener);
+                if (index !== -1) {
+                    listenerArray.splice(index, 1);
+                }
+            }
+        };
+        EventDispatcher.prototype.dispatchEvent = function (event) {
+            if (this._listeners === undefined)
+                return;
+            var listeners = this._listeners;
+            var listenerArray = listeners[event.type];
+            if (listenerArray !== undefined) {
+                event.target = this;
+                var array = listenerArray.slice(0);
+                for (var i = 0, l = array.length; i < l; i++) {
+                    array[i].call(this, event);
+                }
+            }
+        };
+        return EventDispatcher;
+    }());
+
+    var App = (function () {
+        function App() {
+            this._lt = Date.now();
+        }
+        App.create = function () {
+            return new App();
+        };
+        App.prototype.mainLoop = function () {
+            var now = Date.now();
+            var dt = now - this._lt;
+            this._lt = now;
+            requestAnimationFrame(this.mainLoop);
+        };
+        return App;
+    }());
+    var app = App.create();
+
+    var Director = (function () {
+        function Director() {
+        }
+        Director.create = function () {
+            return new Director();
+        };
+        return Director;
+    }());
+    var director = Director.create();
+
+    var devicePixelRatio = window.devicePixelRatio;
+
+    var WebGLRenderer = (function () {
+        function WebGLRenderer() {
+        }
+        Object.defineProperty(WebGLRenderer.prototype, "canvas", {
+            get: function () {
+                return this._canvas;
+            },
+            set: function (canvas) {
+                this._canvas = canvas;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(WebGLRenderer.prototype, "gl", {
+            get: function () {
+                return this._gl;
+            },
+            set: function (gl) {
+                this._gl = gl;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        WebGLRenderer.create = function (canvas) {
+            var renderer = new WebGLRenderer();
+            if (typeof canvas == "string") {
+                renderer.canvas = document.getElementById(canvas);
             }
             else {
-                this.entity.appendChild(child.entity);
+                renderer.canvas = canvas;
             }
-            this.children.unshift(child);
-        };
-        BaseObject.prototype.removeChild = function (child) {
-            if (child.parent != this) {
-                throw "这个child的parent不是它";
+            var names = ["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
+            for (var _i = 0, names_1 = names; _i < names_1.length; _i++) {
+                var v = names_1[_i];
+                try {
+                    renderer.gl = renderer.canvas.getContext(v);
+                    break;
+                }
+                catch (e) {
+                }
             }
-            this.entity.removeChild(child);
+            if (!renderer.gl) {
+                throw 'WebGL not supported.';
+            }
+            return renderer;
         };
-        Object.defineProperty(BaseObject.prototype, "name", {
-            get: function () {
-                return this._name;
-            },
-            set: function (name) {
-                this._name = name;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(BaseObject.prototype, "parent", {
-            get: function () {
-                return this._parent;
-            },
-            set: function (parent) {
-                parent.addChild(this);
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(BaseObject.prototype, "x", {
-            get: function () {
-                return this._x;
-            },
-            set: function (x) {
-                this._x = x;
-                this.style.left = x + 'px';
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(BaseObject.prototype, "y", {
-            get: function () {
-                return this._y;
-            },
-            set: function (y) {
-                this._y = y;
-                this.style.top = y + 'px';
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(BaseObject.prototype, "width", {
-            get: function () {
-                return this._width;
-            },
-            set: function (width) {
-                this._width = width;
-                this.style.width = width + 'px';
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(BaseObject.prototype, "height", {
-            get: function () {
-                return this._height;
-            },
-            set: function (height) {
-                this._height = height;
-                this.style.height = height + 'px';
-            },
-            enumerable: true,
-            configurable: true
-        });
-        return BaseObject;
+        return WebGLRenderer;
     }());
 
-    var Group = (function (_super) {
-        tslib_1.__extends(Group, _super);
-        function Group() {
-            var _this = _super.call(this) || this;
-            _this.entity = document.createElement('div');
-            _this.init();
-            return _this;
-        }
-        return Group;
-    }(BaseObject));
-
-    var Image = (function (_super) {
-        tslib_1.__extends(Image, _super);
-        function Image() {
-            var _this = _super.call(this) || this;
-            _this.img = new window.Image();
-            _this.entity.appendChild(_this.img);
-            return _this;
-        }
-        Object.defineProperty(Image.prototype, "width", {
-            get: function () {
-                return this._width;
-            },
-            set: function (width) {
-                this._width = width;
-                this.style.width = width + 'px';
-                this.img.width = width;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Image.prototype, "height", {
-            get: function () {
-                return this._height;
-            },
-            set: function (height) {
-                this._height = height;
-                this.style.height = height + 'px';
-                this.img.height = height;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Image.prototype, "src", {
-            get: function () {
-                return this.img.src;
-            },
-            set: function (src) {
-                this.img.src = src;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        return Image;
-    }(Group));
-
-    var Stage = (function (_super) {
-        tslib_1.__extends(Stage, _super);
-        function Stage() {
+    var Object3D = (function (_super) {
+        tslib.__extends(Object3D, _super);
+        function Object3D() {
             return _super.call(this) || this;
         }
-        return Stage;
-    }(Group));
+        return Object3D;
+    }(EventDispatcher));
 
-    var Game = (function () {
-        function Game() {
-            this.name = 'Game';
-            this.gameStage = new Stage();
-            this.style = this.gameStage.style;
-            this._lastTime = Date.now();
-            this.fps = 0;
-            this.gameStage.style.position = 'absolute';
-            this.gameStage.width = document.documentElement.clientWidth;
-            this.gameStage.height = document.documentElement.clientHeight;
-            document.body.appendChild(this.gameStage.entity);
-            this.update();
-        }
-        Game.prototype.addChild = function (child) {
-            this.gameStage.addChild(child);
-        };
-        Game.prototype.removeChild = function (child) {
-            this.gameStage.removeChild(child);
-        };
-        Game.prototype.update = function () {
-            var dt = (Date.now() - this._lastTime) / 1000;
-            this.fps = ~~(1 / dt);
-            this.gameStage.children.forEach(function (v) { return v.update(dt); });
-            this._lastTime = Date.now();
-            requestAnimationFrame(this.update.bind(this));
-        };
-        return Game;
-    }());
-
-    var Scene = (function () {
+    var Scene = (function (_super) {
+        tslib.__extends(Scene, _super);
         function Scene() {
+            return _super.call(this) || this;
         }
         return Scene;
-    }());
+    }(Object3D));
 
-    exports.BaseObject = BaseObject;
-    exports.Game = Game;
-    exports.Group = Group;
-    exports.Image = Image;
+    exports.EventDispatcher = EventDispatcher;
+    exports.Object3D = Object3D;
     exports.Scene = Scene;
-    exports.Stage = Stage;
+    exports.Vector3 = Vector3;
+    exports.WebGLRenderer = WebGLRenderer;
+    exports.app = app;
+    exports.devicePixelRatio = devicePixelRatio;
+    exports.director = director;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
-//# sourceMappingURL=engine.js.map
+//# sourceMappingURL=hycv.js.map

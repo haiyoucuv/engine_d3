@@ -16,9 +16,9 @@ export default {
 	input: 'src/index.ts',
 	output: [
 		{
-			file: `debug/engine.js`,
+			file: `debug/hycv.js`,
 			format: 'umd',
-			name: 'engine',
+			name: 'hycv',
 			globals: {
 				tslib: 'tslib'
 			},

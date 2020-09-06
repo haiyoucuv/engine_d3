@@ -4,3 +4,7 @@
  */
 
 export * from './math/index';
+export * from './event/index';
+export * from './app/index';
+export * from './core/index';
+export * from './scene/index';
