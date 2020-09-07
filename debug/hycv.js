@@ -195,35 +195,6 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         return EventDispatcher;
     }());
 
-    var App = (function () {
-        function App() {
-            this._lt = Date.now();
-        }
-        App.create = function () {
-            return new App();
-        };
-        App.prototype.mainLoop = function () {
-            var now = Date.now();
-            var dt = now - this._lt;
-            this._lt = now;
-            requestAnimationFrame(this.mainLoop);
-        };
-        return App;
-    }());
-    var app = App.create();
-
-    var Director = (function () {
-        function Director() {
-        }
-        Director.create = function () {
-            return new Director();
-        };
-        return Director;
-    }());
-    var director = Director.create();
-
-    var devicePixelRatio = window.devicePixelRatio;
-
     var WebGLRenderer = (function () {
         function WebGLRenderer() {
         }
@@ -247,9 +218,25 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
             enumerable: false,
             configurable: true
         });
+        WebGLRenderer.prototype.init = function () {
+            var gl = this.gl;
+            gl.clearColor(0.2, 0.2, 0.2, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+            gl.enable(gl.BLEND);
+            gl.enable(gl.DEPTH_TEST);
+            gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+        };
+        WebGLRenderer.prototype.onResize = function () {
+            this.canvas.width = window.innerWidth;
+            this.canvas.height = window.innerHeight;
+            this.gl.viewport(0, 0, window.innerWidth, window.innerHeight);
+        };
         WebGLRenderer.create = function (canvas) {
             var renderer = new WebGLRenderer();
-            if (typeof canvas == "string") {
+            if (!canvas) {
+                renderer.canvas = document.createElement('canvas');
+            }
+            else if (typeof canvas == "string") {
                 renderer.canvas = document.getElementById(canvas);
             }
             else {
@@ -268,35 +255,419 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
             if (!renderer.gl) {
                 throw 'WebGL not supported.';
             }
+            renderer.init();
             return renderer;
+        };
+        WebGLRenderer.prototype.render = function (scene) {
         };
         return WebGLRenderer;
     }());
+
+    var App = (function () {
+        function App() {
+            var _this = this;
+            this._lt = Date.now();
+            this.mainLoop = function () {
+                var now = Date.now();
+                var dt = (now - _this._lt) / 1000;
+                _this._lt = now;
+                if (_this.currentScene) {
+                    _this.currentScene.update(dt);
+                    _this.renderer.render(_this.currentScene);
+                }
+                requestAnimationFrame(_this.mainLoop);
+            };
+            this.renderer = WebGLRenderer.create();
+            document.body.appendChild(this.renderer.canvas);
+            this.onResize();
+            this.initEvent();
+            this.mainLoop();
+        }
+        Object.defineProperty(App.prototype, "currentScene", {
+            get: function () {
+                return this._currentScene;
+            },
+            set: function (scene) {
+                this._currentScene = scene;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        App.create = function () {
+            return new App();
+        };
+        App.prototype.onResize = function () {
+            this.winWidth = window.innerWidth;
+            this.winHeight = window.innerHeight;
+            this.renderer.onResize();
+            this.currentScene && this.currentScene.onResize();
+        };
+        App.prototype.initEvent = function () {
+            window.onresize = this.onResize;
+        };
+        return App;
+    }());
+    var app = App.create();
+
+    var Director = (function () {
+        function Director() {
+        }
+        Director.create = function () {
+            return new Director();
+        };
+        Object.defineProperty(Director.prototype, "currentScene", {
+            get: function () {
+                return app.currentScene;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Director.prototype.changeScene = function (scene) {
+            var oldScene = this.currentScene;
+            app.currentScene = scene;
+            app.currentScene.init();
+            oldScene && oldScene.destroy();
+        };
+        return Director;
+    }());
+    var director = Director.create();
+
+    var devicePixelRatio = window.devicePixelRatio;
+    var winWidth = window.innerWidth;
+    var winHeight = window.innerHeight;
+
+    function loadShader(gl, type, source) {
+        var shader = gl.createShader(type);
+        if (shader == null) {
+            throw '无法创建shader';
+        }
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            gl.deleteShader(shader);
+            throw gl.getShaderInfoLog(shader);
+        }
+        return shader;
+    }
+    function compileProgram(gl, vertexSrc, fragmentSrc, attributeLocations) {
+        var vertexShader = loadShader(gl, gl.VERTEX_SHADER, vertexSrc);
+        var fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fragmentSrc);
+        var program = gl.createProgram();
+        gl.attachShader(program, vertexShader);
+        gl.attachShader(program, fragmentShader);
+        if (attributeLocations) {
+            for (var i in attributeLocations) {
+                gl.bindAttribLocation(program, attributeLocations[i], i);
+            }
+        }
+        gl.linkProgram(program);
+        gl.deleteShader(vertexShader);
+        gl.deleteShader(fragmentShader);
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+            gl.deleteProgram(program);
+            console.error('gl.getError()', gl.getError());
+            throw gl.getProgramInfoLog(program);
+        }
+        return program;
+    }
+    function setPrecision(src, precision) {
+        return (src.substring(0, 9) !== 'precision')
+            ? 'precision ' + precision + ' float;\n' + src
+            : src;
+    }
 
     var Object3D = (function (_super) {
         tslib.__extends(Object3D, _super);
         function Object3D() {
             return _super.call(this) || this;
         }
+        Object3D.prototype.init = function () {
+        };
+        Object3D.prototype.update = function (dt) {
+        };
+        Object3D.prototype.render = function () {
+            this._render();
+        };
+        Object3D.prototype._render = function () {
+        };
+        Object3D.prototype.destroy = function () {
+        };
+        Object3D.prototype.onResize = function () {
+        };
         return Object3D;
     }(EventDispatcher));
+
+    function generateUniformAccessObject(gl, uniformData) {
+        var uniforms = { data: {} };
+        uniforms["gl"] = gl;
+        var uniformKeys = Object.keys(uniformData);
+        for (var i = 0; i < uniformKeys.length; i++) {
+            var fullName = uniformKeys[i];
+            var nameTokens = fullName.split('.');
+            var name = nameTokens[nameTokens.length - 1];
+            var uniformGroup = getUniformGroup(nameTokens, uniforms);
+            var uniform = uniformData[fullName];
+            uniformGroup.data[name] = uniform;
+            uniformGroup.gl = gl;
+            Object.defineProperty(uniformGroup, name, {
+                get: generateGetter(name),
+                set: generateSetter(name, uniform)
+            });
+        }
+        return uniforms;
+    }
+    var generateGetter = function (name) {
+        return function () {
+            return this.data[name].value;
+        };
+    };
+    var GLSL_SINGLE_SETTERS = {
+        float: function setSingleFloat(gl, location, value) { gl.uniform1f(location, value); },
+        vec2: function setSingleVec2(gl, location, value) { gl.uniform2f(location, value[0], value[1]); },
+        vec3: function setSingleVec3(gl, location, value) { gl.uniform3f(location, value[0], value[1], value[2]); },
+        vec4: function setSingleVec4(gl, location, value) { gl.uniform4f(location, value[0], value[1], value[2], value[3]); },
+        int: function setSingleInt(gl, location, value) { gl.uniform1i(location, value); },
+        ivec2: function setSingleIvec2(gl, location, value) { gl.uniform2i(location, value[0], value[1]); },
+        ivec3: function setSingleIvec3(gl, location, value) { gl.uniform3i(location, value[0], value[1], value[2]); },
+        ivec4: function setSingleIvec4(gl, location, value) { gl.uniform4i(location, value[0], value[1], value[2], value[3]); },
+        bool: function setSingleBool(gl, location, value) { gl.uniform1i(location, value); },
+        bvec2: function setSingleBvec2(gl, location, value) { gl.uniform2i(location, value[0], value[1]); },
+        bvec3: function setSingleBvec3(gl, location, value) { gl.uniform3i(location, value[0], value[1], value[2]); },
+        bvec4: function setSingleBvec4(gl, location, value) { gl.uniform4i(location, value[0], value[1], value[2], value[3]); },
+        mat2: function setSingleMat2(gl, location, value) { gl.uniformMatrix2fv(location, false, value); },
+        mat3: function setSingleMat3(gl, location, value) { gl.uniformMatrix3fv(location, false, value); },
+        mat4: function setSingleMat4(gl, location, value) { gl.uniformMatrix4fv(location, false, value); },
+        sampler2D: function setSingleSampler2D(gl, location, value) { gl.uniform1i(location, value); },
+    };
+    var GLSL_ARRAY_SETTERS = {
+        float: function setFloatArray(gl, location, value) { gl.uniform1fv(location, value); },
+        vec2: function setVec2Array(gl, location, value) { gl.uniform2fv(location, value); },
+        vec3: function setVec3Array(gl, location, value) { gl.uniform3fv(location, value); },
+        vec4: function setVec4Array(gl, location, value) { gl.uniform4fv(location, value); },
+        int: function setIntArray(gl, location, value) { gl.uniform1iv(location, value); },
+        ivec2: function setIvec2Array(gl, location, value) { gl.uniform2iv(location, value); },
+        ivec3: function setIvec3Array(gl, location, value) { gl.uniform3iv(location, value); },
+        ivec4: function setIvec4Array(gl, location, value) { gl.uniform4iv(location, value); },
+        bool: function setBoolArray(gl, location, value) { gl.uniform1iv(location, value); },
+        bvec2: function setBvec2Array(gl, location, value) { gl.uniform2iv(location, value); },
+        bvec3: function setBvec3Array(gl, location, value) { gl.uniform3iv(location, value); },
+        bvec4: function setBvec4Array(gl, location, value) { gl.uniform4iv(location, value); },
+        sampler2D: function setSampler2DArray(gl, location, value) { gl.uniform1iv(location, value); },
+    };
+    function generateSetter(name, uniform) {
+        return function (value) {
+            this.data[name].value = value;
+            var location = this.data[name].location;
+            if (uniform.size === 1) {
+                GLSL_SINGLE_SETTERS[uniform.type](this.gl, location, value);
+            }
+            else {
+                GLSL_ARRAY_SETTERS[uniform.type](this.gl, location, value);
+            }
+        };
+    }
+    function getUniformGroup(nameTokens, uniform) {
+        var cur = uniform;
+        for (var i = 0; i < nameTokens.length - 1; i++) {
+            var o = cur[nameTokens[i]] || { data: {} };
+            cur[nameTokens[i]] = o;
+            cur = o;
+        }
+        return cur;
+    }
+
+    function mapType(gl, type) {
+        if (!GL_TABLE) {
+            var typeNames = Object.keys(GL_TO_GLSL_TYPES);
+            GL_TABLE = {};
+            for (var i = 0; i < typeNames.length; ++i) {
+                var tn = typeNames[i];
+                GL_TABLE[gl[tn]] = GL_TO_GLSL_TYPES[tn];
+            }
+        }
+        return GL_TABLE[type];
+    }
+    var GL_TABLE = null;
+    var GL_TO_GLSL_TYPES = {
+        'FLOAT': 'float',
+        'FLOAT_VEC2': 'vec2',
+        'FLOAT_VEC3': 'vec3',
+        'FLOAT_VEC4': 'vec4',
+        'INT': 'int',
+        'INT_VEC2': 'ivec2',
+        'INT_VEC3': 'ivec3',
+        'INT_VEC4': 'ivec4',
+        'BOOL': 'bool',
+        'BOOL_VEC2': 'bvec2',
+        'BOOL_VEC3': 'bvec3',
+        'BOOL_VEC4': 'bvec4',
+        'FLOAT_MAT2': 'mat2',
+        'FLOAT_MAT3': 'mat3',
+        'FLOAT_MAT4': 'mat4',
+        'SAMPLER_2D': 'sampler2D'
+    };
+
+    function mapSize(type) {
+        return GLSL_TO_SIZE[type];
+    }
+    var GLSL_TO_SIZE = {
+        'float': 1,
+        'vec2': 2,
+        'vec3': 3,
+        'vec4': 4,
+        'int': 1,
+        'ivec2': 2,
+        'ivec3': 3,
+        'ivec4': 4,
+        'bool': 1,
+        'bvec2': 2,
+        'bvec3': 3,
+        'bvec4': 4,
+        'mat2': 4,
+        'mat3': 9,
+        'mat4': 16,
+        'sampler2D': 1
+    };
+
+    function extractAttributes(gl, program) {
+        var attributes = {};
+        var totalAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
+        for (var i = 0; i < totalAttributes; i++) {
+            var attribData = gl.getActiveAttrib(program, i);
+            var type = mapType(gl, attribData.type);
+            attributes[attribData.name] = {
+                type: type,
+                size: mapSize(type),
+                location: gl.getAttribLocation(program, attribData.name),
+                pointer: function (type, normalized, stride, start) {
+                    if (type === void 0) { type = gl.FLOAT; }
+                    if (normalized === void 0) { normalized = false; }
+                    if (stride === void 0) { stride = 0; }
+                    if (start === void 0) { start = 0; }
+                    gl.enableVertexAttribArray(this.location);
+                    gl.vertexAttribPointer(this.location, this.size, type, normalized, stride, start);
+                }
+            };
+        }
+        return attributes;
+    }
+
+    function defaultValue(type, size) {
+        switch (type) {
+            case 'float':
+                return 0;
+            case 'vec2':
+                return new Float32Array(2 * size);
+            case 'vec3':
+                return new Float32Array(3 * size);
+            case 'vec4':
+                return new Float32Array(4 * size);
+            case 'int':
+            case 'sampler2D':
+                return 0;
+            case 'ivec2':
+                return new Int32Array(2 * size);
+            case 'ivec3':
+                return new Int32Array(3 * size);
+            case 'ivec4':
+                return new Int32Array(4 * size);
+            case 'bool':
+                return false;
+            case 'bvec2':
+                return booleanArray(2 * size);
+            case 'bvec3':
+                return booleanArray(3 * size);
+            case 'bvec4':
+                return booleanArray(4 * size);
+            case 'mat2':
+                return new Float32Array([1, 0,
+                    0, 1]);
+            case 'mat3':
+                return new Float32Array([1, 0, 0,
+                    0, 1, 0,
+                    0, 0, 1]);
+            case 'mat4':
+                return new Float32Array([1, 0, 0, 0,
+                    0, 1, 0, 0,
+                    0, 0, 1, 0,
+                    0, 0, 0, 1]);
+        }
+    }
+    var booleanArray = function (size) {
+        var array = new Array(size);
+        for (var i = 0; i < array.length; i++) {
+            array[i] = false;
+        }
+        return array;
+    };
+
+    function extractUniforms(gl, program) {
+        var uniforms = {};
+        var totalUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+        for (var i = 0; i < totalUniforms; i++) {
+            var uniformData = gl.getActiveUniform(program, i);
+            var name = uniformData.name.replace(/\[.*?\]/, "");
+            var type = mapType(gl, uniformData.type);
+            uniforms[name] = {
+                type: type,
+                size: uniformData.size,
+                location: gl.getUniformLocation(program, name),
+                value: defaultValue(type, uniformData.size)
+            };
+        }
+        return uniforms;
+    }
+
+    var Shader = (function () {
+        function Shader(gl, vertexSrc, fragmentSrc, precision, attributeLocations) {
+            this.gl = gl;
+            if (precision) {
+                setPrecision(vertexSrc, precision);
+                setPrecision(fragmentSrc, precision);
+            }
+            this.program = compileProgram(gl, vertexSrc, fragmentSrc);
+            this.attributes = extractAttributes(gl, this.program);
+            this.uniformData = extractUniforms(gl, this.program);
+            this.uniforms = generateUniformAccessObject(gl, this.uniformData);
+        }
+        Shader.prototype.use = function () {
+            this.gl.useProgram(this.program);
+            return this;
+        };
+        Shader.prototype.destroy = function () {
+            this.attributes = null;
+            this.uniformData = null;
+            this.uniforms = null;
+            this.gl.deleteProgram(this.program);
+        };
+        return Shader;
+    }());
 
     var Scene = (function (_super) {
         tslib.__extends(Scene, _super);
         function Scene() {
             return _super.call(this) || this;
         }
+        Scene.prototype.update = function (dt) {
+        };
+        Scene.prototype._render = function () {
+        };
         return Scene;
     }(Object3D));
 
     exports.EventDispatcher = EventDispatcher;
     exports.Object3D = Object3D;
     exports.Scene = Scene;
+    exports.Shader = Shader;
     exports.Vector3 = Vector3;
     exports.WebGLRenderer = WebGLRenderer;
     exports.app = app;
+    exports.compileProgram = compileProgram;
     exports.devicePixelRatio = devicePixelRatio;
     exports.director = director;
+    exports.setPrecision = setPrecision;
+    exports.winHeight = winHeight;
+    exports.winWidth = winWidth;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

@@ -9,4 +9,14 @@ export class Scene extends Object3D {
     constructor() {
         super();
     }
+
+    public update(dt) {
+
+    }
+
+    protected _render() {
+
+    }
 }
+
+

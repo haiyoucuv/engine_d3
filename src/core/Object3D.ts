@@ -9,5 +9,31 @@ export class Object3D extends EventDispatcher {
     constructor() {
         super();
     }
+
+    public init() {
+
+    }
+
+    public update(dt) {
+
+    }
+
+    public render() {
+        this._render();
+
+
+    }
+
+    protected _render() {
+
+    }
+
+    public destroy() {
+
+    }
+
+    public onResize() {
+
+    }
 }
 

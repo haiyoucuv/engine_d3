@@ -18,13 +18,227 @@
             overflow: hidden;
         }
     </style>
-    <script src="../debug/hycv.js"></script>
+    <script src="webgl/webgl-tutorial-master/lib/cuon-matrix.js"></script>
 </head>
 <body>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec3 a_pos;
+        attribute vec3 a_color;
+        
+        attribute vec3 a_normal;// 法向量
+        
+        uniform mat4 u_normalMat;// 法线矩阵
+        
+        uniform mat4 u_vp;// vp
+        uniform mat4 u_model;// m
+        
+        varying vec3 v_normal;
+        varying vec4 v_pos;
+        varying vec4 v_color;
+        
+        void main(){
+            
+            vec4 fragPos = u_model * vec4(a_pos, 1.0);// 顶点位置
+            gl_Position = u_vp * fragPos;
+            
+            v_pos = fragPos;
+            v_color = vec4(a_color, 1.0);
+            
+            // 光线和法向量关系
+            v_normal = normalize(mat3(u_normalMat) * a_normal);// 归一化
+        
+        }
+    </script>
     
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        
+        varying vec3 v_normal;
+        varying vec4 v_pos;
+        varying vec4 v_color;
+        
+        uniform vec3 u_lightColor;// 光照颜色
+        uniform vec3 u_lightPos;// 光照方向
+        
+        uniform vec3 u_viewPos;// 摄像机位置
+        
+        float ambientStrength = 0.1;// 环境光强度
+        float specularStrength = 0.5;// 镜面光强度
+        
+        void main(){
+            vec3 lightDir = normalize(u_lightPos - v_pos.xyz);// 计算光线方向
+            
+            // 计算漫反射
+            float nDotL = max(dot(lightDir, v_normal), 0.0);// 计算漫反射强度
+            vec3 diffuse = u_lightColor * nDotL;// 计算漫反射
+            
+            // 计算镜面反射
+            vec3 viewDir = normalize(u_viewPos - vec3(v_pos));// 计算观察方向向量
+            vec3 reflectDir = reflect(-lightDir, v_normal);// 计算反射方向向量
+            // 计算镜面分量
+            float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+            vec3 specular = specularStrength * spec * u_lightColor;
+            
+            // 计算最终颜色
+            vec3 result = (ambientStrength + diffuse + specular) * v_color.rgb;
+            
+            // gl_FragColor = vec4(result, v_color.a);
+            gl_FragColor = vec4(result, 0.1);
+        }
+    </script>
+    
+    <!--    <canvas id="canvas"></canvas>-->
+    <script src="../debug/hycv.js"></script>
     
     <script>
-        console.log(hycv);
+        const Scene = hycv.Scene;
+        const Shader = hycv.Shader;
+        const gl = hycv.app.renderer.gl;
+
+
+        function initArrayBuffer(data, numOfComponents, dataType, attributeLocation) {
+            const colorBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+
+            gl.vertexAttribPointer(attributeLocation, numOfComponents, dataType, false, 0, 0);
+            gl.enableVertexAttribArray(attributeLocation);
+        }
+
+
+        class testScene extends Scene {
+            constructor() {
+                super();
+            }
+
+            init() {
+                super.init();
+
+                const VERTEX_SHADER_SOURCE = document.getElementById('vertex-shader').text;
+                const FRAGMENT_SHADER_SOURCE = document.getElementById('fragment-shader').text;
+
+                const shader = new Shader(
+                    gl,
+                    VERTEX_SHADER_SOURCE,
+                    FRAGMENT_SHADER_SOURCE
+                );
+                this.shader = shader;
+                shader.use();
+
+                // 顶点数据
+                const vertex = new Float32Array([
+                    1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0,  // v0-v1-v2-v3 front
+                    1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0,  // v0-v3-v4-v5 right
+                    1.0, 1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0,  // v0-v5-v6-v1 up
+                    -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0,  // v1-v6-v7-v2 left
+                    -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0,  // v7-v4-v3-v2 down
+                    1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0   // v4-v7-v6-v5 back
+                ]);
+
+                // 颜色
+                const color = new Float32Array([
+                    0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0,  // v0-v1-v2-v3 front(blue)
+                    0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4,  // v0-v3-v4-v5 right(green)
+                    1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4,  // v0-v5-v6-v1 up(red)
+                    1.0, 1.0, 0.4, 1.0, 1.0, 0.4, 1.0, 1.0, 0.4, 1.0, 1.0, 0.4,  // v1-v6-v7-v2 left
+                    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,  // v7-v4-v3-v2 down
+                    0.4, 1.0, 1.0, 0.4, 1.0, 1.0, 0.4, 1.0, 1.0, 0.4, 1.0, 1.0   // v4-v7-v6-v5 back
+                ]);
+
+                // 法向量
+                const normal = new Float32Array([    // Normal
+                    0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0,  // v0-v1-v2-v3 front
+                    1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,  // v0-v3-v4-v5 right
+                    0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,  // v0-v5-v6-v1 up
+                    -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0,  // v1-v6-v7-v2 left
+                    0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0,  // v7-v4-v3-v2 down
+                    0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0   // v4-v7-v6-v5 back
+                ]);
+
+                // index
+                const indices = new Uint8Array([
+                    0, 1, 2, 0, 2, 3,    // front
+                    4, 5, 6, 4, 6, 7,    // right
+                    8, 9, 10, 8, 10, 11,    // up
+                    12, 13, 14, 12, 14, 15,    // left
+                    16, 17, 18, 16, 18, 19,    // down
+                    20, 21, 22, 20, 22, 23     // back
+                ]);
+                this.indices = indices;
+
+                const vertexBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, vertex, gl.STATIC_DRAW);
+                shader.attributes.a_pos.pointer();
+
+                const colorBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, color, gl.STATIC_DRAW);
+                shader.attributes.a_color.pointer();
+
+                const normalBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, normal, gl.STATIC_DRAW);
+                shader.attributes.a_normal.pointer();
+
+                // 数据组索引
+                const indexBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+                gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+
+
+                // 设置光照颜色
+                shader.uniforms.u_lightColor = new Float32Array([ 0.5, 0.5, 0.5 ]);
+
+                // 设置光照方向
+                const lightPos = new Vector3([ -0.5, -0.5, -4 ]);
+                shader.uniforms.u_lightPos = lightPos.elements;
+
+                const viewPos = [ 2, 2, -8 ];
+                this.viewPos = viewPos;
+                // mvp矩阵
+                const vp = new Matrix4();
+                vp.setPerspective(40, hycv.app.winWidth / hycv.app.winHeight, 1, 100);    // fov, aspect, near, far
+                vp.lookAt(viewPos[0], viewPos[1], viewPos[2], 0, 0, 0, 0, 1, 0);    // eyeXYZ  centerXYZ  upXYZ
+                shader.uniforms.u_vp = vp.elements;
+
+                // 模型矩阵
+                this.model = new Matrix4();
+                shader.uniforms.u_model = this.model.elements;
+
+
+            }
+
+            update(dt) {
+                super.update(dt);
+
+                this.model.rotate(1, 1, 1, 1);
+                this.shader.uniforms.u_model = this.model.elements;
+
+
+                const normalMat = new Matrix4(this.model).invert().transpose();
+                this.shader.uniforms.u_normalMat = normalMat.elements;
+
+                this.shader.uniforms.u_viewPos = new Float32Array(this.viewPos);
+
+
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+                gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_BYTE, 0); // 从数组数据渲染图元
+
+            }
+
+            destroy() {
+                super.destroy();
+            }
+            
+            onResize(){
+            
+            }
+        }
+
+        hycv.director.changeScene(new testScene());
+    
+    
     </script>
 
 

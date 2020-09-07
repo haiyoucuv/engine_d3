@@ -3,6 +3,8 @@
  * Copyright © 2020 haiyoucuv. All rights reserved.
  */
 
+import { Scene } from "../scene/Scene";
+
 export class WebGLRenderer {
 
     public _canvas: HTMLCanvasElement;
@@ -27,9 +29,31 @@ export class WebGLRenderer {
 
     }
 
-    public static create(canvas: HTMLCanvasElement | string) {
+    public init() {
+        const gl = this.gl;
+        gl.clearColor(0.2, 0.2, 0.2, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        // 设置一些参数
+        gl.enable(gl.BLEND);
+        gl.enable(gl.DEPTH_TEST);
+        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    }
+
+    public onResize() {
+        // this.canvas.width = document.documentElement.clientWidth;
+        // this.canvas.height = document.documentElement.clientHeight;
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.gl.viewport(0, 0, window.innerWidth, window.innerHeight);
+    }
+
+
+    public static create(canvas?: HTMLCanvasElement | string) {
         const renderer = new WebGLRenderer();
-        if (typeof canvas == "string") {
+        if (!canvas) {
+            renderer.canvas = document.createElement('canvas') as HTMLCanvasElement;
+        } else if (typeof canvas == "string") {
             renderer.canvas = document.getElementById(canvas) as HTMLCanvasElement;
         } else {
             renderer.canvas = canvas;
@@ -47,7 +71,13 @@ export class WebGLRenderer {
             throw 'WebGL not supported.';
         }
 
+        renderer.init();
+
         return renderer;
+    }
+
+
+    public render(scene: Scene) {
 
     }
 }

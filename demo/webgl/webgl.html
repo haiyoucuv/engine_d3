@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <title>WebGL</title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="full-screen" content="true" />
+    <meta name="screen-orientation" content="portrait" />
+    <meta name="x5-fullscreen" content="true" />
+    <meta name="360-fullscreen" content="true" />
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        .canvas {
+            position: fixed;
+            margin: auto;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+    </style>
+    
+    <script src="glLab.js"></script>
+    
+    <script src="webgl-tutorial-master/lib/cuon-matrix.js"></script>
+</head>
+
+<body>
+    <canvas id="gl" class="canvas"></canvas>
+    
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_pos;
+        // uniform float u_size;
+        uniform mat4 u_modelMatrix;
+        attribute vec4 a_color;
+        varying vec4 v_color;
+        void main(void){
+            gl_Position = a_pos * u_modelMatrix;
+            //  gl_PointSize = u_size;
+            v_color = a_color;
+        }
+    </script>
+    
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec4 v_color;
+        void main(void){
+            gl_FragColor = v_color;
+        }
+    </script>
+    <script>
+        const canvas = document.getElementById('gl');
+        const size = Math.min(
+            document.documentElement.clientWidth,
+            document.documentElement.clientHeight
+        );// - 50;
+        canvas.width = canvas.height = size;
+        // canvas.width = document.documentElement.clientWidth;
+        // canvas.height = document.documentElement.clientHeight;
+
+        // 清屏
+        const gl = canvas.getContext('webgl', {
+            antialias: true,
+            preserveDrawingBuffer: false,
+            antialiasSamples: 8
+        });
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        const VERTEX_SHADER_SOURCE = document.getElementById('vertex-shader').text;
+        const FRAGMENT_SHADER_SOURCE = document.getElementById('fragment-shader').text;
+
+
+        function initShaders(gl, vertexShaderSource, fragmentShaderSource) {
+
+            let program = createProgram(gl, vertexShaderSource, fragmentShaderSource);
+
+            if (!program) {
+                console.warn('无法初始化webgl程序');
+            }
+
+            gl.useProgram(program);
+            gl.program = program;
+        }
+
+        initShaders(gl, VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+
+        // 预制一些定点数据
+        // x, y, r, g, b
+
+        // let N = 100;
+        // let r = 0.5;
+        // let vertexData = [ 0.0, 0.0, 1.0, 1.0, 1.0 ];
+        // for (let i = 0; i <= N; i++) {
+        //     let angle = i * 2 * Math.PI / N;
+        //     let x = Math.sin(angle) * r;
+        //     let y = Math.cos(angle) * r;
+        //     let _r = Math.random();
+        //     let _g = Math.random();
+        //     let _b = Math.random();
+        //     vertexData.push(x, y, 1.0, 1.0, 1.0);
+        // }
+        //
+        // let vertices = new Float32Array(vertexData);
+
+        const sqrt3_4 = Math.sqrt(3) / 4;
+        let vertices = new Float32Array([
+            0.0, sqrt3_4, 1.0, 1.0, 0.0,
+            -0.5, -sqrt3_4, 0.0, 1.0, 1.0,
+            0.5, -sqrt3_4, 1.0, 0.0, 1.0,
+        ]);
+
+        // 获得并注入 attribute 变量
+        const a_pos = gl.getAttribLocation(gl.program, 'a_pos');
+        const a_color = gl.getAttribLocation(gl.program, 'a_color');
+
+        // 创建一个buffer对象
+        let vertexBuffer = gl.createBuffer();
+        // 绑定buffer对象
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        // 将数据写入buffer对象
+        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+        let BYTES_PER_ELEMENT = vertices.BYTES_PER_ELEMENT; // 获取字节长度
+
+        // 关联变量并数据并指定解析类型并启用对属性变量的分配
+        gl.vertexAttribPointer(a_pos, 2, gl.FLOAT, false, BYTES_PER_ELEMENT * 5, 0);
+        gl.enableVertexAttribArray(a_pos);
+
+        // 关联变量并数据并指定解析类型并启用对属性变量的分配
+        gl.vertexAttribPointer(a_color, 3, gl.FLOAT, false, BYTES_PER_ELEMENT * 5, 2 * BYTES_PER_ELEMENT);
+        gl.enableVertexAttribArray(a_color);
+
+        // 获得并注入 uniform 变量
+        const u_size = gl.getUniformLocation(gl.program, 'u_size');
+        gl.uniform1f(u_size, 100.0);
+
+
+        // animation
+        let modelMatrix = new Matrix4();
+
+        let u_modelMatrix = gl.getUniformLocation(gl.program, 'u_modelMatrix');
+
+        let angle = 0;
+
+        function update() {
+            modelMatrix.setRotate(angle++, 0, 0, 1);
+            gl.uniformMatrix4fv(u_modelMatrix, false, modelMatrix.elements);
+        }
+
+        function tick() {
+            update();
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+            gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length / 5);
+            requestAnimationFrame(tick);
+        }
+
+        tick()
+    
+    
+    </script>
+</body>
+
+</html>

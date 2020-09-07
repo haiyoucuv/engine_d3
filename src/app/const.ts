@@ -4,3 +4,5 @@
  */
 
 export const devicePixelRatio = window.devicePixelRatio;
+export const winWidth = window.innerWidth;
+export const winHeight = window.innerHeight;

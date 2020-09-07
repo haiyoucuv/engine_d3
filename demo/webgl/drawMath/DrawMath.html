@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Draw Math</title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="full-screen" content="true" />
+    <meta name="screen-orientation" content="portrait" />
+    <meta name="x5-fullscreen" content="true" />
+    <meta name="360-fullscreen" content="true" />
+    
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+        
+        #canvas {
+            position: fixed;
+            margin: auto;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+    </style>
+    
+    <script src="lib/glLab.js"></script>
+    <script src="lib/cuon-matrix.js"></script>
+</head>
+<body>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_pos;
+        
+        void main(){
+            gl_Position = a_pos;
+            gl_PointSize = 5.0;
+        }
+    </script>
+    
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        void main(){
+            gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        }
+    </script>
+    
+    <canvas id="canvas"></canvas>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const size = Math.min(document.documentElement.clientWidth, document.documentElement.clientHeight);
+        canvas.width = canvas.height = size;
+
+        const gl = canvas.getContext('webgl', {
+            antialias: true,
+            preserveDrawingBuffer: false,
+            antialiasSamples: 8
+        });
+
+        // 清屏
+        clearScreen();
+
+        // 拿到shader
+        const VERTEX_SHADER_SOURCE = document.getElementById('vertex-shader').text;
+        const FRAGMENT_SHADER_SOURCE = document.getElementById('fragment-shader').text;
+
+        // 创建webgl程序
+        const program = createProgram(gl, VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+        gl.useProgram(program);
+        gl.program = program;
+
+        let vertexArray = [];
+
+        let qu = 100;
+        for (let i = -qu; i <= qu; i++) {
+            let x = i / qu;
+            let y = Math.sin(x);
+            vertexArray.push(x, y, 0.0);
+        }
+        // for (let i = 0; i <= 100; i++) {
+        //     let x = i / 100;
+        //     let y = Math.sqrt(0.5 - x * x);
+        //     vertexArray.push(x, y, 0.0);
+        //     vertexArray.push(x, -y, 0.0);
+        // }
+
+        let vertices = new Float32Array(vertexArray);
+
+        const a_pos = gl.getAttribLocation(gl.program, 'a_pos');
+        // 创建一个buffer对象
+        let vertexBuffer = gl.createBuffer();
+        // 绑定buffer对象
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        // 将数据写入buffer对象
+        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+        let BYTES_PER_ELEMENT = vertices.BYTES_PER_ELEMENT; // 获取字节长度
+
+        // 关联变量并数据并指定解析类型并启用对属性变量的分配
+        gl.vertexAttribPointer(a_pos, 3, gl.FLOAT, false, BYTES_PER_ELEMENT * 3, 0);
+        gl.enableVertexAttribArray(a_pos);
+
+        function tick() {
+            clearScreen();
+            gl.drawArrays(gl.LINE_STRIP, 0, vertices.length / 3);
+            requestAnimationFrame(tick);
+        }
+
+        tick()
+    </script>
+
+</body>
+</html>

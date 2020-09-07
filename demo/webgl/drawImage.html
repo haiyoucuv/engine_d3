@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Draw Image</title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="full-screen" content="true" />
+    <meta name="screen-orientation" content="portrait" />
+    <meta name="x5-fullscreen" content="true" />
+    <meta name="360-fullscreen" content="true" />
+    
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #canvas {
+            position: fixed;
+            margin: auto;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+    </style>
+    
+    <script src="glLab.js"></script>
+    <script src="webgl-tutorial-master/lib/cuon-matrix.js"></script>
+</head>
+<body>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_pos;
+        attribute vec2 a_texCoord;
+        varying vec2 v_texCoord;
+        
+        void main(){
+            gl_Position = a_pos;
+            gl_PointSize = 5.0;
+            v_texCoord = a_texCoord;
+        }
+    </script>
+    
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec2 v_texCoord;
+        uniform sampler2D u_sampler;
+        
+        void main(){
+            gl_FragColor = texture2D(u_sampler, v_texCoord);
+        }
+    </script>
+    
+    <canvas id="canvas"></canvas>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const wSize = Math.min(document.documentElement.clientWidth, document.documentElement.clientHeight);
+        canvas.width = canvas.height = wSize;
+
+        const gl = canvas.getContext('webgl', {
+            antialias: true,
+            preserveDrawingBuffer: false,
+            antialiasSamples: 8
+        });
+
+        // 清屏
+        gl.clearColor(0.1, 0.1, 0.1, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+        
+        // 拿到shader
+        const VERTEX_SHADER_SOURCE = document.getElementById('vertex-shader').text;
+        const FRAGMENT_SHADER_SOURCE = document.getElementById('fragment-shader').text;
+
+        // 创建webgl程序
+        const program = createProgram(gl, VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+        gl.useProgram(program);
+        gl.program = program;
+        
+        const vertex = new Float32Array([
+            -0.5, 0.5, 0.0, 1.0,
+            -0.5, -0.5, 0.0, 0.0,
+            0.5, -0.5, 1.0, 0.0,
+
+            -0.5, 0.5, 0.0, 1.0,
+            0.5, 0.5, 1.0, 1.0,
+            0.5, -0.5, 1.0, 0.0,
+        ]);
+        
+        const vertexBuffer = gl.createBuffer(); // 创建缓冲区
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);   // 绑定缓冲区
+        gl.bufferData(gl.ARRAY_BUFFER, vertex, gl.STATIC_DRAW); // 设置缓冲数据
+
+        const BYTES_SIZE = vertex.BYTES_PER_ELEMENT;
+
+        const a_pos = gl.getAttribLocation(program, 'a_pos');
+        gl.vertexAttribPointer(a_pos, 2, gl.FLOAT, false, 4 * BYTES_SIZE, 0);   // 从指定缓冲区中读取数据
+        gl.enableVertexAttribArray(a_pos);
+
+        const a_texCoord = gl.getAttribLocation(program, 'a_texCoord');
+        gl.vertexAttribPointer(a_texCoord, 2, gl.FLOAT, false, 4 * BYTES_SIZE, 2 * BYTES_SIZE);
+        gl.enableVertexAttribArray(a_texCoord);
+
+        const u_sampler = gl.getUniformLocation(program, 'u_sampler');
+
+        loadImage('./images/magicLion.png', (image) => {
+            loadTexture(image, u_sampler, gl.TEXTURE0);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+            gl.drawArrays(gl.TRIANGLES, 0, vertex.length / 4);
+        });
+
+        function loadImage(src, success, failed) {
+            const image = new Image();
+            image.onload = () => success(image);
+            image.onerror = () => failed(null);
+            image.src = src;
+        }
+
+        /**
+         * 创建纹理
+         * @param image 图片数据
+         * @param sampler 通道uniform参数
+         * @param textureUnit 纹理通道
+         */
+        function loadTexture(image, sampler, textureUnit) {
+            const texture = gl.createTexture(); // 创建一个纹理
+            
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);   // 翻转 Y 轴
+            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);    // 预乘透明度通道
+            
+            gl.activeTexture(textureUnit);  // 激活纹理单元，之后对纹理对操作会影响当前激活的纹理单元
+            gl.bindTexture(gl.TEXTURE_2D, texture); // 绑定纹理
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);  // 设置纹理参数
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image); // 指定二维纹理图像
+            gl.uniform1i(sampler, gl.TEXTURE0 - textureUnit);   // 将纹理通道传入Shader
+        }
+        
+    </script>
+</body>
+</html>
