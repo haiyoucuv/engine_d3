@@ -24,8 +24,8 @@ export function extractAttributes(gl: WebGLRenderingContext, program: WebGLProgr
         const attribData = gl.getActiveAttrib(program, i);
         const newAttribute = Attribute.create(gl, program, attribData);
         newAttribute.init();
-        console.log(attribData);
-        console.log(newAttribute);
+        // console.log(attribData);
+        // console.log(newAttribute);
         attributes[attribData.name] = newAttribute
     }
 

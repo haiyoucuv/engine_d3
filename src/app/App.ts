@@ -5,6 +5,7 @@
 
 import { WebGLRenderer } from "../core/WebGLRenderer";
 import { Scene } from "../scene/Scene";
+import { winSize } from "./const";
 
 class App {
 
@@ -18,10 +19,6 @@ class App {
     public get currentScene(): Scene {
         return this._currentScene;
     }
-
-    public winWidth: number;
-    public winHeight: number;
-
 
     private constructor() {
 
@@ -57,8 +54,8 @@ class App {
     }
 
     private onResize() {
-        this.winWidth = window.innerWidth;
-        this.winHeight = window.innerHeight;
+        winSize.width = window.innerWidth;
+        winSize.height = window.innerHeight;
 
         this.renderer.onResize();
         this.currentScene && this.currentScene.onResize();

@@ -21,10 +21,10 @@ export function extractUniforms(gl: WebGLRenderingContext, program: WebGLProgram
 
     const totalUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
 
-    for (var i = 0; i < totalUniforms; i++) {
-        var uniformData: WebGLActiveInfo = gl.getActiveUniform(program, i);
-        var name = uniformData.name.replace(/\[.*?\]/, "");
-        var type = mapType(gl, uniformData.type);
+    for (let i = 0; i < totalUniforms; i++) {
+        const uniformData: WebGLActiveInfo = gl.getActiveUniform(program, i);
+        const name = uniformData.name.replace(/\[.*?\]/, "");
+        const type = mapType(gl, uniformData.type);
 
         uniforms[name] = {
             type: type,

@@ -18,13 +18,14 @@
             overflow: hidden;
         }
     </style>
-    <script src="webgl/webgl-tutorial-master/lib/cuon-matrix.js"></script>
 </head>
 <body>
+    <!-- 帧率检测 -->
+    <script src="lib/stats.js"></script>
+    
     <script id="vertex-shader" type="x-shader/x-vertex">
         attribute vec3 pos;
         attribute vec3 color;
-        
         attribute vec3 normal;// 法向量
         
         uniform mat4 normalMat;// 法线矩阵
@@ -88,13 +89,17 @@
         }
     </script>
     
-    <!--    <canvas id="canvas"></canvas>-->
     <script src="../debug/hycv.js"></script>
+    <!--    <script src="lib/cuon-matrix.js"></script>-->
     
     <script>
         const Scene = hycv.Scene;
         const Shader = hycv.Shader;
         const gl = hycv.app.renderer.gl;
+        const winSize = hycv.winSize;
+        const Matrix4 = hycv.Matrix4;
+        const Vector3 = hycv.Vector3;
+        const Color = hycv.Color;
 
         class testScene extends Scene {
             constructor() {
@@ -144,7 +149,7 @@
                 ]);
 
                 // index
-                const indices = new Uint8Array([
+                const indices = this.indices = new Uint8Array([
                     0, 1, 2, 0, 2, 3,    // front
                     4, 5, 6, 4, 6, 7,    // right
                     8, 9, 10, 8, 10, 11,    // up
@@ -152,7 +157,6 @@
                     16, 17, 18, 16, 18, 19,    // down
                     20, 21, 22, 20, 22, 23     // back
                 ]);
-                this.indices = indices;
 
                 shader.attributes.pos.bind(vertex)
                 shader.attributes.pos.pointer();
@@ -171,24 +175,23 @@
                 shader.uniforms.alpha = 0.1;
 
                 // 设置光照颜色
-                shader.uniforms.lightColor = [ 0.1, 0.1, 0.1 ];
+                shader.uniforms.lightColor = new Color(1, 1, 1).toArray();
 
                 // 设置光照方向
-                const lightPos = new Vector3([ -0.5, -0.5, -4 ]);
-                shader.uniforms.lightPos = lightPos.elements;
+                const lightPos = new Vector3(-0.5, -0.5, -4);
+                shader.uniforms.lightPos = lightPos.toArray();
 
-                const viewPos = [ 2, 2, -8 ];
-                this.viewPos = viewPos;
+                const viewPos = this.viewPos = new Vector3(2, 2, -8);
+
                 // mvp矩阵
                 const vp = new Matrix4();
-                vp.setPerspective(70, hycv.app.winWidth / hycv.app.winHeight, 1, 100);    // fov, aspect, near, far
-                vp.lookAt(viewPos[0], viewPos[1], viewPos[2], 0, 0, 0, 0, 1, 0);    // eyeXYZ  centerXYZ  upXYZ
-                shader.uniforms.vp = vp.elements;
+                vp.setPerspective(70, winSize.width / winSize.height, 1, 100);  // fov, aspect, near, far
+                vp.multiply(new Matrix4().setLookAt(viewPos, new Vector3(), new Vector3(0, 1, 0)));
+                shader.uniforms.vp = vp.toArray();
 
                 // 模型矩阵
                 this.model = new Matrix4();
-                shader.uniforms.model = this.model.elements;
-
+                shader.uniforms.model = this.model.toArray();
 
             }
 
@@ -196,13 +199,12 @@
                 super.update(dt);
 
                 this.model.rotate(1, 1, 1, 1);
-                this.shader.uniforms.model = this.model.elements;
+                this.shader.uniforms.model = this.model.toArray();
 
+                const normalMat = this.model.clone().invert().transpose();
+                this.shader.uniforms.normalMat = normalMat.toArray();
 
-                const normalMat = new Matrix4(this.model).invert().transpose();
-                this.shader.uniforms.normalMat = normalMat.elements;
-
-                this.shader.uniforms.viewPos = new Float32Array(this.viewPos);
+                this.shader.uniforms.viewPos = this.viewPos.toArray();
 
 
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -220,7 +222,6 @@
         }
 
         hycv.director.changeScene(new testScene());
-    
     
     </script>
 

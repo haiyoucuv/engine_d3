@@ -3,6 +3,9 @@
  * Copyright © 2020 haiyoucuv. All rights reserved.
  */
 
-export const devicePixelRatio = window.devicePixelRatio;
-export const winWidth = window.innerWidth;
-export const winHeight = window.innerHeight;
+export let devicePixelRatio = window.devicePixelRatio;
+
+export const winSize = {
+    width: window.innerWidth,
+    height: window.innerHeight
+}

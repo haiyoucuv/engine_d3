@@ -4,6 +4,7 @@
  */
 
 import { Scene } from "../scene/Scene";
+import { winSize } from "../app/const";
 
 export class WebGLRenderer {
 
@@ -41,10 +42,8 @@ export class WebGLRenderer {
     }
 
     public onResize() {
-        // this.canvas.width = document.documentElement.clientWidth;
-        // this.canvas.height = document.documentElement.clientHeight;
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
+        this.canvas.width = winSize.width;
+        this.canvas.height = winSize.height;
         this.gl.viewport(0, 0, window.innerWidth, window.innerHeight);
     }
 
