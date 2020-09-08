@@ -25,7 +25,7 @@ export class WebGLRenderer {
         this._gl = gl;
     }
 
-    constructor() {
+    private constructor() {
 
     }
 

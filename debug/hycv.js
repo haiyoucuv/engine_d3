@@ -344,14 +344,17 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         gl.shaderSource(shader, source);
         gl.compileShader(shader);
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            console.error(gl.getShaderInfoLog(shader));
             gl.deleteShader(shader);
-            throw gl.getShaderInfoLog(shader);
+            return null;
         }
         return shader;
     }
     function compileProgram(gl, vertexSrc, fragmentSrc, attributeLocations) {
         var vertexShader = loadShader(gl, gl.VERTEX_SHADER, vertexSrc);
         var fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fragmentSrc);
+        if (!vertexShader || !fragmentShader)
+            return;
         var program = gl.createProgram();
         gl.attachShader(program, vertexShader);
         gl.attachShader(program, fragmentShader);
@@ -529,25 +532,67 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         'sampler2D': 1
     };
 
+    var Attribute = (function () {
+        function Attribute(gl, program, attribData) {
+            this.gl = gl;
+            this.program = program;
+            this._bufferData = null;
+            this.name = attribData.name;
+            this.type = mapType(gl, attribData.type);
+            this.size = mapSize(this.type);
+        }
+        Object.defineProperty(Attribute.prototype, "bufferData", {
+            get: function () {
+                return this._bufferData;
+            },
+            set: function (bufferData) {
+                this._bufferData = bufferData;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Attribute.create = function (gl, program, attribData) {
+            return new Attribute(gl, program, attribData).init();
+        };
+        Attribute.prototype.init = function () {
+            var gl = this.gl;
+            this.buffer = gl.createBuffer();
+            this.location = gl.getAttribLocation(this.program, this.name);
+            this.enable();
+            return this;
+        };
+        Attribute.prototype.enable = function () {
+            this.gl.enableVertexAttribArray(this.location);
+        };
+        Attribute.prototype.disable = function () {
+            this.gl.disableVertexAttribArray(this.location);
+        };
+        Attribute.prototype.bind = function (bufferData) {
+            bufferData && (this._bufferData = bufferData);
+            var gl = this.gl;
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, this._bufferData, gl.STATIC_DRAW);
+        };
+        Attribute.prototype.pointer = function (type, normalized, stride, start) {
+            if (type === void 0) { type = this.gl.FLOAT; }
+            if (normalized === void 0) { normalized = false; }
+            if (stride === void 0) { stride = 0; }
+            if (start === void 0) { start = 0; }
+            this.gl.vertexAttribPointer(this.location, this.size, type, normalized, stride, start);
+        };
+        return Attribute;
+    }());
+
     function extractAttributes(gl, program) {
         var attributes = {};
         var totalAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
         for (var i = 0; i < totalAttributes; i++) {
             var attribData = gl.getActiveAttrib(program, i);
-            var type = mapType(gl, attribData.type);
-            attributes[attribData.name] = {
-                type: type,
-                size: mapSize(type),
-                location: gl.getAttribLocation(program, attribData.name),
-                pointer: function (type, normalized, stride, start) {
-                    if (type === void 0) { type = gl.FLOAT; }
-                    if (normalized === void 0) { normalized = false; }
-                    if (stride === void 0) { stride = 0; }
-                    if (start === void 0) { start = 0; }
-                    gl.enableVertexAttribArray(this.location);
-                    gl.vertexAttribPointer(this.location, this.size, type, normalized, stride, start);
-                }
-            };
+            var newAttribute = Attribute.create(gl, program, attribData);
+            newAttribute.init();
+            console.log(attribData);
+            console.log(newAttribute);
+            attributes[attribData.name] = newAttribute;
         }
         return attributes;
     }

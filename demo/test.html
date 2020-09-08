@@ -22,30 +22,30 @@
 </head>
 <body>
     <script id="vertex-shader" type="x-shader/x-vertex">
-        attribute vec3 a_pos;
-        attribute vec3 a_color;
+        attribute vec3 pos;
+        attribute vec3 color;
         
-        attribute vec3 a_normal;// 法向量
+        attribute vec3 normal;// 法向量
         
-        uniform mat4 u_normalMat;// 法线矩阵
+        uniform mat4 normalMat;// 法线矩阵
         
-        uniform mat4 u_vp;// vp
-        uniform mat4 u_model;// m
+        uniform mat4 vp;// vp
+        uniform mat4 model;// m
         
         varying vec3 v_normal;
         varying vec4 v_pos;
-        varying vec4 v_color;
+        varying vec3 v_color;
         
         void main(){
             
-            vec4 fragPos = u_model * vec4(a_pos, 1.0);// 顶点位置
-            gl_Position = u_vp * fragPos;
+            vec4 fragPos = model * vec4(pos, 1.0);// 顶点位置
+            gl_Position = vp * fragPos;
             
             v_pos = fragPos;
-            v_color = vec4(a_color, 1.0);
+            v_color = color;
             
             // 光线和法向量关系
-            v_normal = normalize(mat3(u_normalMat) * a_normal);// 归一化
+            v_normal = normalize(mat3(normalMat) * normal);// 归一化
         
         }
     </script>
@@ -55,35 +55,36 @@
         
         varying vec3 v_normal;
         varying vec4 v_pos;
-        varying vec4 v_color;
+        varying vec3 v_color;
         
-        uniform vec3 u_lightColor;// 光照颜色
-        uniform vec3 u_lightPos;// 光照方向
+        uniform float alpha;// 透明度
         
-        uniform vec3 u_viewPos;// 摄像机位置
+        uniform vec3 lightColor;// 光照颜色
+        uniform vec3 lightPos;// 光照方向
+        
+        uniform vec3 viewPos;// 摄像机位置
         
         float ambientStrength = 0.1;// 环境光强度
         float specularStrength = 0.5;// 镜面光强度
         
         void main(){
-            vec3 lightDir = normalize(u_lightPos - v_pos.xyz);// 计算光线方向
+            vec3 lightDir = normalize(lightPos - v_pos.xyz);// 计算光线方向
             
             // 计算漫反射
             float nDotL = max(dot(lightDir, v_normal), 0.0);// 计算漫反射强度
-            vec3 diffuse = u_lightColor * nDotL;// 计算漫反射
+            vec3 diffuse = lightColor * nDotL;// 计算漫反射
             
             // 计算镜面反射
-            vec3 viewDir = normalize(u_viewPos - vec3(v_pos));// 计算观察方向向量
+            vec3 viewDir = normalize(viewPos - vec3(v_pos));// 计算观察方向向量
             vec3 reflectDir = reflect(-lightDir, v_normal);// 计算反射方向向量
             // 计算镜面分量
             float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-            vec3 specular = specularStrength * spec * u_lightColor;
+            vec3 specular = specularStrength * spec * lightColor;
             
             // 计算最终颜色
-            vec3 result = (ambientStrength + diffuse + specular) * v_color.rgb;
+            vec3 result = (ambientStrength + diffuse + specular) * v_color;
             
-            // gl_FragColor = vec4(result, v_color.a);
-            gl_FragColor = vec4(result, 0.1);
+            gl_FragColor = vec4(result, alpha);
         }
     </script>
     
@@ -94,17 +95,6 @@
         const Scene = hycv.Scene;
         const Shader = hycv.Shader;
         const gl = hycv.app.renderer.gl;
-
-
-        function initArrayBuffer(data, numOfComponents, dataType, attributeLocation) {
-            const colorBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-
-            gl.vertexAttribPointer(attributeLocation, numOfComponents, dataType, false, 0, 0);
-            gl.enableVertexAttribArray(attributeLocation);
-        }
-
 
         class testScene extends Scene {
             constructor() {
@@ -117,13 +107,11 @@
                 const VERTEX_SHADER_SOURCE = document.getElementById('vertex-shader').text;
                 const FRAGMENT_SHADER_SOURCE = document.getElementById('fragment-shader').text;
 
-                const shader = new Shader(
+                const shader = this.shader = new Shader(
                     gl,
                     VERTEX_SHADER_SOURCE,
                     FRAGMENT_SHADER_SOURCE
-                );
-                this.shader = shader;
-                shader.use();
+                ).use();
 
                 // 顶点数据
                 const vertex = new Float32Array([
@@ -138,11 +126,11 @@
                 // 颜色
                 const color = new Float32Array([
                     0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0,  // v0-v1-v2-v3 front(blue)
-                    0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4,  // v0-v3-v4-v5 right(green)
-                    1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4,  // v0-v5-v6-v1 up(red)
-                    1.0, 1.0, 0.4, 1.0, 1.0, 0.4, 1.0, 1.0, 0.4, 1.0, 1.0, 0.4,  // v1-v6-v7-v2 left
-                    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,  // v7-v4-v3-v2 down
-                    0.4, 1.0, 1.0, 0.4, 1.0, 1.0, 0.4, 1.0, 1.0, 0.4, 1.0, 1.0   // v4-v7-v6-v5 back
+                    0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, // v0-v3-v4-v5 right(green)
+                    1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, // v0-v5-v6-v1 up(red)
+                    1.0, 1.0, 0.4, 1.0, 1.0, 0.4, 1.0, 1.0, 0.4, 1.0, 1.0, 0.4, // v1-v6-v7-v2 left
+                    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, // v7-v4-v3-v2 down
+                    0.4, 1.0, 1.0, 0.4, 1.0, 1.0, 0.4, 1.0, 1.0, 0.4, 1.0, 1.0, // v4-v7-v6-v5 back
                 ]);
 
                 // 法向量
@@ -166,45 +154,40 @@
                 ]);
                 this.indices = indices;
 
-                const vertexBuffer = gl.createBuffer();
-                gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-                gl.bufferData(gl.ARRAY_BUFFER, vertex, gl.STATIC_DRAW);
-                shader.attributes.a_pos.pointer();
+                shader.attributes.pos.bind(vertex)
+                shader.attributes.pos.pointer();
 
-                const colorBuffer = gl.createBuffer();
-                gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-                gl.bufferData(gl.ARRAY_BUFFER, color, gl.STATIC_DRAW);
-                shader.attributes.a_color.pointer();
+                shader.attributes.color.bind(color)
+                shader.attributes.color.pointer();
 
-                const normalBuffer = gl.createBuffer();
-                gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
-                gl.bufferData(gl.ARRAY_BUFFER, normal, gl.STATIC_DRAW);
-                shader.attributes.a_normal.pointer();
+                shader.attributes.normal.bind(normal)
+                shader.attributes.normal.pointer();
 
                 // 数据组索引
                 const indexBuffer = gl.createBuffer();
                 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
                 gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
+                shader.uniforms.alpha = 0.1;
 
                 // 设置光照颜色
-                shader.uniforms.u_lightColor = new Float32Array([ 0.5, 0.5, 0.5 ]);
+                shader.uniforms.lightColor = [ 0.1, 0.1, 0.1 ];
 
                 // 设置光照方向
                 const lightPos = new Vector3([ -0.5, -0.5, -4 ]);
-                shader.uniforms.u_lightPos = lightPos.elements;
+                shader.uniforms.lightPos = lightPos.elements;
 
                 const viewPos = [ 2, 2, -8 ];
                 this.viewPos = viewPos;
                 // mvp矩阵
                 const vp = new Matrix4();
-                vp.setPerspective(40, hycv.app.winWidth / hycv.app.winHeight, 1, 100);    // fov, aspect, near, far
+                vp.setPerspective(70, hycv.app.winWidth / hycv.app.winHeight, 1, 100);    // fov, aspect, near, far
                 vp.lookAt(viewPos[0], viewPos[1], viewPos[2], 0, 0, 0, 0, 1, 0);    // eyeXYZ  centerXYZ  upXYZ
-                shader.uniforms.u_vp = vp.elements;
+                shader.uniforms.vp = vp.elements;
 
                 // 模型矩阵
                 this.model = new Matrix4();
-                shader.uniforms.u_model = this.model.elements;
+                shader.uniforms.model = this.model.elements;
 
 
             }
@@ -213,13 +196,13 @@
                 super.update(dt);
 
                 this.model.rotate(1, 1, 1, 1);
-                this.shader.uniforms.u_model = this.model.elements;
+                this.shader.uniforms.model = this.model.elements;
 
 
                 const normalMat = new Matrix4(this.model).invert().transpose();
-                this.shader.uniforms.u_normalMat = normalMat.elements;
+                this.shader.uniforms.normalMat = normalMat.elements;
 
-                this.shader.uniforms.u_viewPos = new Float32Array(this.viewPos);
+                this.shader.uniforms.viewPos = new Float32Array(this.viewPos);
 
 
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -230,9 +213,9 @@
             destroy() {
                 super.destroy();
             }
-            
-            onResize(){
-            
+
+            onResize() {
+
             }
         }
 

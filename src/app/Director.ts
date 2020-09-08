@@ -8,7 +8,7 @@ import { Scene } from "../scene/Scene";
 
 class Director {
 
-    constructor() {
+    private constructor() {
 
     }
 

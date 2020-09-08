@@ -23,7 +23,7 @@ class App {
     public winHeight: number;
 
 
-    constructor() {
+    private constructor() {
 
         this.renderer = WebGLRenderer.create(
             // document.getElementById('canvas') as HTMLCanvasElement

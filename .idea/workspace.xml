@@ -2,66 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a363f917-efa6-42f5-b290-8e66e76c061d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/demo/webgl/Cube.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/CubePre.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/draw2Image.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/drawImage.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/drawMath/DrawMath.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/drawMath/lib/cuon-matrix.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/drawMath/lib/glLab.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/glLab.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/images/avatar.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/images/magicLion.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/images/circle.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/images/sky.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/lib/cuon-matrix.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/lib/myutils.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_10_transform.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_11_animation.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_12_texture.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_13_muptiple_textures.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_15_LookAtTriangles.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_16_LookAtRotatedTriangle.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_17_OrthographicProjection.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_18_PerspectiveProjection.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_19_DepthTest.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_20_HelloCube.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_21_ColoredCube.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_22_LightCube.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_23_LightCube_ambient.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_24_LightTranslatedRotatedCube.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_25_PointLightedCube.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_26_PointLightedCube_perFragment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_2_clear_screen.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_3_draw_one_point.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_4_draw_one_point2.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_5_draw_three_points.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_6_draw_three_colored_points.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_7_draw_triangles.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_8_draw_square.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl-tutorial-master/webgl_9_draw_circle.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo/webgl/webgl.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/core/shader/Shader.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/core/shader/ShaderTools.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/core/shader/defaultValue.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/core/shader/extractAttributes.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/core/shader/extractUniforms.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/core/shader/generateUniformAccessObject.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/core/shader/mapSize.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/core/shader/mapType.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/shader/Attribute.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/debug/hycv.js" beforeDir="false" afterPath="$PROJECT_DIR$/debug/hycv.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/debug/hycv.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/debug/hycv.js.map" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/test.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/test.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/App.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/App.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/Director.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/Director.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/const.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/const.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/Object3D.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/Object3D.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/WebGLRenderer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/WebGLRenderer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scene/Scene.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/scene/Scene.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/shader/ShaderTools.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/shader/ShaderTools.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/shader/extractAttributes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/shader/extractAttributes.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,7 +78,7 @@
       <recent name="$PROJECT_DIR$/book/engine" />
     </key>
   </component>
-  <component name="RunManager" selected="JavaScript Debug.CubePre.html">
+  <component name="RunManager" selected="npm.dev">
     <configuration name="CubePre.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/d3/demo/webgl/CubePre.html" useBuiltInWebServerPort="true">
       <method v="2" />
     </configuration>
@@ -167,17 +117,17 @@
     </configuration>
     <list>
       <item itemvalue="JavaScript Debug.test.html" />
+      <item itemvalue="JavaScript Debug.CubePre.html" />
       <item itemvalue="npm.declare" />
       <item itemvalue="npm.dev" />
       <item itemvalue="npm.ts" />
-      <item itemvalue="JavaScript Debug.CubePre.html" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="npm.dev" />
+        <item itemvalue="JavaScript Debug.test.html" />
         <item itemvalue="JavaScript Debug.CubePre.html" />
         <item itemvalue="npm.declare" />
-        <item itemvalue="JavaScript Debug.test.html" />
-        <item itemvalue="npm.dev" />
         <item itemvalue="npm.ts" />
       </list>
     </recent_temporary>
@@ -241,53 +191,74 @@
       <workItem from="1599399392707" duration="3653000" />
       <workItem from="1599408360463" duration="281000" />
       <workItem from="1599408652680" duration="560000" />
-      <workItem from="1599444311340" duration="13877000" />
+      <workItem from="1599444311340" duration="13959000" />
+      <workItem from="1599534578497" duration="7752000" />
     </task>
+    <task id="LOCAL-00001" summary="one step">
+      <created>1599485044905</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1599485044905</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="one step" />
+    <option name="LAST_COMMIT_MESSAGE" value="one step" />
   </component>
   <component name="WindowStateProjectService">
     <state x="0" y="262" width="1071" height="701" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1599478475778">
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
     <state x="0" y="262" width="1071" height="701" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1200@0.0.1920.1200" timestamp="1599478475778" />
-    <state width="172" height="1102" key="GridCell.Tab.0.bottom" timestamp="1599481338343">
+    <state x="70" y="172" key="CommitChangelistDialog2" timestamp="1599485044689">
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
-    <state width="172" height="1102" key="GridCell.Tab.0.bottom/0.0.1920.1200@0.0.1920.1200" timestamp="1599481338343" />
+    <state x="70" y="172" key="CommitChangelistDialog2/0.0.1920.1200@0.0.1920.1200" timestamp="1599485044689" />
+    <state width="178" height="1102" key="GridCell.Tab.0.bottom" timestamp="1599544056902">
+      <screen x="0" y="0" width="1920" height="1200" />
+    </state>
+    <state width="178" height="1102" key="GridCell.Tab.0.bottom/0.0.1920.1200@0.0.1920.1200" timestamp="1599544056902" />
     <state width="316" height="608" key="GridCell.Tab.0.bottom/30.23.1650.1027@30.23.1650.1027" timestamp="1599409213045" />
-    <state width="376" height="1057" key="GridCell.Tab.0.bottom/30.23.1890.1177@30.23.1890.1177" timestamp="1599220781670" />
-    <state width="172" height="1102" key="GridCell.Tab.0.center" timestamp="1599481338340">
+    <state width="172" height="1102" key="GridCell.Tab.0.bottom/30.23.1890.1177@30.23.1890.1177" timestamp="1599485077364" />
+    <state width="178" height="1102" key="GridCell.Tab.0.center" timestamp="1599544056900">
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
-    <state width="172" height="1102" key="GridCell.Tab.0.center/0.0.1920.1200@0.0.1920.1200" timestamp="1599481338340" />
+    <state width="178" height="1102" key="GridCell.Tab.0.center/0.0.1920.1200@0.0.1920.1200" timestamp="1599544056900" />
     <state width="316" height="608" key="GridCell.Tab.0.center/30.23.1650.1027@30.23.1650.1027" timestamp="1599409213044" />
-    <state width="376" height="1057" key="GridCell.Tab.0.center/30.23.1890.1177@30.23.1890.1177" timestamp="1599220781669" />
-    <state width="172" height="1102" key="GridCell.Tab.0.left" timestamp="1599481338338">
+    <state width="172" height="1102" key="GridCell.Tab.0.center/30.23.1890.1177@30.23.1890.1177" timestamp="1599485077364" />
+    <state width="178" height="1102" key="GridCell.Tab.0.left" timestamp="1599544056899">
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
-    <state width="172" height="1102" key="GridCell.Tab.0.left/0.0.1920.1200@0.0.1920.1200" timestamp="1599481338338" />
+    <state width="178" height="1102" key="GridCell.Tab.0.left/0.0.1920.1200@0.0.1920.1200" timestamp="1599544056899" />
     <state width="316" height="608" key="GridCell.Tab.0.left/30.23.1650.1027@30.23.1650.1027" timestamp="1599409213044" />
-    <state width="376" height="1057" key="GridCell.Tab.0.left/30.23.1890.1177@30.23.1890.1177" timestamp="1599220781669" />
-    <state width="172" height="1102" key="GridCell.Tab.0.right" timestamp="1599481338342">
+    <state width="172" height="1102" key="GridCell.Tab.0.left/30.23.1890.1177@30.23.1890.1177" timestamp="1599485077363" />
+    <state width="178" height="1102" key="GridCell.Tab.0.right" timestamp="1599544056901">
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
-    <state width="172" height="1102" key="GridCell.Tab.0.right/0.0.1920.1200@0.0.1920.1200" timestamp="1599481338342" />
+    <state width="178" height="1102" key="GridCell.Tab.0.right/0.0.1920.1200@0.0.1920.1200" timestamp="1599544056901" />
     <state width="316" height="608" key="GridCell.Tab.0.right/30.23.1650.1027@30.23.1650.1027" timestamp="1599409213045" />
-    <state width="376" height="1057" key="GridCell.Tab.0.right/30.23.1890.1177@30.23.1890.1177" timestamp="1599220781670" />
+    <state width="172" height="1102" key="GridCell.Tab.0.right/30.23.1890.1177@30.23.1890.1177" timestamp="1599485077364" />
     <state width="500" height="445" key="SwitcherDM" timestamp="1599407114571">
       <screen x="30" y="23" width="1650" height="1027" />
     </state>
     <state width="500" height="445" key="SwitcherDM/30.23.1650.1027@30.23.1650.1027" timestamp="1599407114571" />
+    <state x="61" y="340" key="Vcs.Push.Dialog.v2" timestamp="1599485046440">
+      <screen x="0" y="0" width="1920" height="1200" />
+    </state>
+    <state x="61" y="340" key="Vcs.Push.Dialog.v2/0.0.1920.1200@0.0.1920.1200" timestamp="1599485046440" />
     <state x="1001" y="484" width="587" height="502" key="find.popup" timestamp="1599460873565">
       <screen x="30" y="23" width="1890" height="1177" />
     </state>
     <state x="1001" y="484" width="587" height="502" key="find.popup/30.23.1890.1177@30.23.1890.1177" timestamp="1599460873565" />
-    <state x="126" y="271" width="670" height="676" key="search.everywhere.popup" timestamp="1599483856871">
+    <state x="126" y="271" width="670" height="676" key="search.everywhere.popup" timestamp="1599551462549">
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
-    <state x="126" y="271" width="670" height="676" key="search.everywhere.popup/0.0.1920.1200@0.0.1920.1200" timestamp="1599483856871" />
+    <state x="126" y="271" width="670" height="676" key="search.everywhere.popup/0.0.1920.1200@0.0.1920.1200" timestamp="1599551462549" />
   </component>
 </project>

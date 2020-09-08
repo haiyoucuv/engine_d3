@@ -4,8 +4,7 @@
  * Copyright © 2020 haiyoucuv. All rights reserved.
  */
 
-import { mapType } from './mapType';
-import { mapSize } from './mapSize';
+import { Attribute } from "./Attribute";
 
 /**
  * Extracts the attributes获取attributes属性
@@ -23,19 +22,11 @@ export function extractAttributes(gl: WebGLRenderingContext, program: WebGLProgr
 
     for (let i = 0; i < totalAttributes; i++) {
         const attribData = gl.getActiveAttrib(program, i);
-        const type = mapType(gl, attribData.type);
-
-        attributes[attribData.name] = {
-            type: type,
-            size: mapSize(type),
-            location: gl.getAttribLocation(program, attribData.name),
-            //TODO - make an attribute object
-            pointer: function (type = gl.FLOAT, normalized = false, stride = 0, start = 0) {
-                // console.log(this.location)
-                gl.enableVertexAttribArray(this.location);
-                gl.vertexAttribPointer(this.location, this.size, type, normalized, stride, start);
-            }
-        };
+        const newAttribute = Attribute.create(gl, program, attribData);
+        newAttribute.init();
+        console.log(attribData);
+        console.log(newAttribute);
+        attributes[attribData.name] = newAttribute
     }
 
     return attributes;

@@ -22,8 +22,9 @@ function loadShader(gl: WebGLRenderingContext, type: GLenum, source: string) {
 
     // 获取编译状态
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(shader));
         gl.deleteShader(shader);
-        throw gl.getShaderInfoLog(shader);
+        return null;
     }
 
     return shader;
@@ -41,6 +42,8 @@ export function compileProgram(gl: WebGLRenderingContext, vertexSrc: string, fra
     // 初始化shader
     const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vertexSrc);
     const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fragmentSrc);
+
+    if (!vertexShader || !fragmentShader) return;
 
     // 创建一个gl程序
     const program = gl.createProgram();
