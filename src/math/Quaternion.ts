@@ -7,11 +7,11 @@ export class Quaternion {
     private _z: number
     private _w: number
 
-    constructor(x?: number, y?: number, z?: number, w?: number) {
-        this._x = x || 0;
-        this._y = y || 0;
-        this._z = z || 0;
-        this._w = (w !== undefined) ? w : 1;
+    constructor(x: number = 0, y: number = 0, z: number = 0, w: number = 1) {
+        this._x = x;
+        this._y = y;
+        this._z = z;
+        this._w = w;
     }
 
     public static slerp(qa, qb, qm, t) {
@@ -563,3 +563,6 @@ export class Quaternion {
 
 }
 
+export function quat(x: number = 0, y: number = 0, z: number = 0, w: number = 1) {
+    return new Quaternion(x, y, z, w);
+}

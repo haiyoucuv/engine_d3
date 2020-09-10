@@ -169,7 +169,8 @@ export class Color {
     public g = 1;
     public b = 1;
 
-    constructor(r, g?, b?) {
+    constructor(r?: number | Color | string, g?, b?) {
+        if (!r) return this;
         (!g && !b) ? this.set(r) : this.setRGB(r, g, b);
     }
 
@@ -712,4 +713,6 @@ function LinearToSRGB(c) {
 
 }
 
-
+export function color(r?, g?, b?) {
+    return new Color(r, g, b);
+}

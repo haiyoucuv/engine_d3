@@ -1,7 +1,7 @@
 export class Vector2 {
     constructor(
         public x: number = 0,
-        public y: number = 0,
+        public y: number = x,
     ) {
     }
 
@@ -169,5 +169,12 @@ export class Vector2 {
     }
 }
 
+/**
+ * 一个快速创建的方法
+ * @returns {Vector2}
+ */
+export function v2(x = 0, y = x) {
+    return new Vector2(x, y);
+}
 
 

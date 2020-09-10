@@ -281,4 +281,9 @@ export class Ray {
     }
 }
 
-
+export function ray(
+    origin: Vector3 = new Vector3(),
+    direction: Vector3 = new Vector3()
+) {
+    return new Ray(origin, direction);
+}

@@ -4,6 +4,7 @@
  */
 
 import { Object3D } from "../core/Object3D";
+import { Touch } from "../event/TouchEvent";
 
 export class Scene extends Object3D {
     constructor() {
@@ -15,6 +16,30 @@ export class Scene extends Object3D {
     }
 
     protected _render() {
+
+    }
+
+    public onClick(t: Touch) {
+        console.log(t);
+    }
+
+    public onMouseDown(t: Touch) {
+
+    }
+
+    public onMouseMove(t: Touch) {
+
+    }
+
+    public onMouesOver(t: Touch) {
+
+    }
+
+    public onMouseOut(t: Touch) {
+
+    }
+
+    public onMouseUp(t: Touch) {
 
     }
 }

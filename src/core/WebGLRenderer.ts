@@ -42,9 +42,16 @@ export class WebGLRenderer {
     }
 
     public onResize() {
-        this.canvas.width = winSize.width;
-        this.canvas.height = winSize.height;
-        this.gl.viewport(0, 0, window.innerWidth, window.innerHeight);
+        const canvas = this.canvas;
+        const dpi = window.devicePixelRatio;
+        console.log('dpi', dpi);
+        const w = winSize.width;
+        const h = winSize.height;
+        canvas.width = w * dpi;
+        canvas.height = h * dpi;
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        this.gl.viewport(0, 0, canvas.width, canvas.height);
     }
 
 
@@ -61,7 +68,12 @@ export class WebGLRenderer {
         const names = ["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
         for (let v of names) {
             try {
-                renderer.gl = renderer.canvas.getContext(v) as WebGLRenderingContext;
+                // {
+                //     antialias: true,
+                //     antialiasSamples: 8,
+                //     preserveDrawingBuffer: false
+                // }
+                renderer.gl = renderer.canvas.getContext(v,) as WebGLRenderingContext;
                 break;
             } catch (e) {
             }

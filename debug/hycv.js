@@ -8,8 +8,37 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
 }(this, (function (exports, tslib) { 'use strict';
 
     var Matrix4 = (function () {
-        function Matrix4() {
-            this.elements = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+        function Matrix4(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33) {
+            if (m00 === void 0) { m00 = 1; }
+            if (m01 === void 0) { m01 = 0; }
+            if (m02 === void 0) { m02 = 0; }
+            if (m03 === void 0) { m03 = 0; }
+            if (m10 === void 0) { m10 = 0; }
+            if (m11 === void 0) { m11 = 1; }
+            if (m12 === void 0) { m12 = 0; }
+            if (m13 === void 0) { m13 = 0; }
+            if (m20 === void 0) { m20 = 0; }
+            if (m21 === void 0) { m21 = 0; }
+            if (m22 === void 0) { m22 = 1; }
+            if (m23 === void 0) { m23 = 0; }
+            if (m30 === void 0) { m30 = 0; }
+            if (m31 === void 0) { m31 = 0; }
+            if (m32 === void 0) { m32 = 0; }
+            if (m33 === void 0) { m33 = 1; }
+            if (m00 instanceof Float32Array) {
+                this.elements = m00;
+            }
+            else if (Array.isArray(m00)) {
+                this.elements = new Float32Array(m00);
+            }
+            else {
+                this.elements = new Float32Array([
+                    m00, m01, m02, m03,
+                    m10, m11, m12, m13,
+                    m20, m21, m22, m23,
+                    m30, m31, m32, m33
+                ]);
+            }
         }
         Matrix4.prototype.setIdentity = function () {
             var e = this.elements;
@@ -761,12 +790,31 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         };
         return Matrix4;
     }());
+    function mat4(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33) {
+        if (m00 === void 0) { m00 = 1; }
+        if (m01 === void 0) { m01 = 0; }
+        if (m02 === void 0) { m02 = 0; }
+        if (m03 === void 0) { m03 = 0; }
+        if (m10 === void 0) { m10 = 0; }
+        if (m11 === void 0) { m11 = 1; }
+        if (m12 === void 0) { m12 = 0; }
+        if (m13 === void 0) { m13 = 0; }
+        if (m20 === void 0) { m20 = 0; }
+        if (m21 === void 0) { m21 = 0; }
+        if (m22 === void 0) { m22 = 1; }
+        if (m23 === void 0) { m23 = 0; }
+        if (m30 === void 0) { m30 = 0; }
+        if (m31 === void 0) { m31 = 0; }
+        if (m32 === void 0) { m32 = 0; }
+        if (m33 === void 0) { m33 = 1; }
+        return new Matrix4(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33);
+    }
 
     var Vector3 = (function () {
         function Vector3(x, y, z) {
             if (x === void 0) { x = 0; }
-            if (y === void 0) { y = 0; }
-            if (z === void 0) { z = 0; }
+            if (y === void 0) { y = x; }
+            if (z === void 0) { z = x; }
             this.x = x;
             this.y = y;
             this.z = z;
@@ -977,6 +1025,12 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         };
         return Vector3;
     }());
+    function v3(x, y, z) {
+        if (x === void 0) { x = 0; }
+        if (y === void 0) { y = x; }
+        if (z === void 0) { z = x; }
+        return new Vector3(x, y, z);
+    }
 
     var Sphere = (function () {
         function Sphere(center, radius) {
@@ -1060,6 +1114,11 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         };
         return Sphere;
     }());
+    function sphere(center, radius) {
+        if (center === void 0) { center = new Vector3(); }
+        if (radius === void 0) { radius = 0; }
+        return new Sphere(center, radius);
+    }
 
     var Box3 = (function () {
         function Box3(min, max) {
@@ -1470,6 +1529,8 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
             this.r = 1;
             this.g = 1;
             this.b = 1;
+            if (!r)
+                return this;
             (!g && !b) ? this.set(r) : this.setRGB(r, g, b);
         }
         Color.prototype.set = function (value) {
@@ -1529,34 +1590,34 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
             }
             var m;
             if (m = /^((?:rgb|hsl)a?)\(\s*([^\)]*)\)/.exec(style)) {
-                var color = void 0;
+                var color_1;
                 var name = m[1];
                 var components = m[2];
                 switch (name) {
                     case 'rgb':
                     case 'rgba':
-                        if (color = /^(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(,\s*([0-9]*\.?[0-9]+)\s*)?$/.exec(components)) {
-                            this.r = Math.min(255, parseInt(color[1], 10)) / 255;
-                            this.g = Math.min(255, parseInt(color[2], 10)) / 255;
-                            this.b = Math.min(255, parseInt(color[3], 10)) / 255;
-                            handleAlpha(color[5]);
+                        if (color_1 = /^(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(,\s*([0-9]*\.?[0-9]+)\s*)?$/.exec(components)) {
+                            this.r = Math.min(255, parseInt(color_1[1], 10)) / 255;
+                            this.g = Math.min(255, parseInt(color_1[2], 10)) / 255;
+                            this.b = Math.min(255, parseInt(color_1[3], 10)) / 255;
+                            handleAlpha(color_1[5]);
                             return this;
                         }
-                        if (color = /^(\d+)\%\s*,\s*(\d+)\%\s*,\s*(\d+)\%\s*(,\s*([0-9]*\.?[0-9]+)\s*)?$/.exec(components)) {
-                            this.r = Math.min(100, parseInt(color[1], 10)) / 100;
-                            this.g = Math.min(100, parseInt(color[2], 10)) / 100;
-                            this.b = Math.min(100, parseInt(color[3], 10)) / 100;
-                            handleAlpha(color[5]);
+                        if (color_1 = /^(\d+)\%\s*,\s*(\d+)\%\s*,\s*(\d+)\%\s*(,\s*([0-9]*\.?[0-9]+)\s*)?$/.exec(components)) {
+                            this.r = Math.min(100, parseInt(color_1[1], 10)) / 100;
+                            this.g = Math.min(100, parseInt(color_1[2], 10)) / 100;
+                            this.b = Math.min(100, parseInt(color_1[3], 10)) / 100;
+                            handleAlpha(color_1[5]);
                             return this;
                         }
                         break;
                     case 'hsl':
                     case 'hsla':
-                        if (color = /^([0-9]*\.?[0-9]+)\s*,\s*(\d+)\%\s*,\s*(\d+)\%\s*(,\s*([0-9]*\.?[0-9]+)\s*)?$/.exec(components)) {
-                            var h = parseFloat(color[1]) / 360;
-                            var s = parseInt(color[2], 10) / 100;
-                            var l = parseInt(color[3], 10) / 100;
-                            handleAlpha(color[5]);
+                        if (color_1 = /^([0-9]*\.?[0-9]+)\s*,\s*(\d+)\%\s*,\s*(\d+)\%\s*(,\s*([0-9]*\.?[0-9]+)\s*)?$/.exec(components)) {
+                            var h = parseFloat(color_1[1]) / 360;
+                            var s = parseInt(color_1[2], 10) / 100;
+                            var l = parseInt(color_1[3], 10) / 100;
+                            handleAlpha(color_1[5]);
                             return this.setHSL(h, s, l);
                         }
                         break;
@@ -1793,6 +1854,9 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
     function LinearToSRGB(c) {
         return (c < 0.0031308) ? c * 12.92 : 1.055 * (Math.pow(c, 0.41666)) - 0.055;
     }
+    function color(r, g, b) {
+        return new Color(r, g, b);
+    }
 
     function clamp(value, min, max) {
         return Math.max(min, Math.min(max, value));
@@ -1800,6 +1864,10 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
 
     var Quaternion = (function () {
         function Quaternion(x, y, z, w) {
+            if (x === void 0) { x = 0; }
+            if (y === void 0) { y = 0; }
+            if (z === void 0) { z = 0; }
+            if (w === void 0) { w = 1; }
             this.setFromUnitVectors = function () {
                 var v1 = new Vector3();
                 var r;
@@ -1827,10 +1895,10 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
                     return this.normalize();
                 };
             }();
-            this._x = x || 0;
-            this._y = y || 0;
-            this._z = z || 0;
-            this._w = (w !== undefined) ? w : 1;
+            this._x = x;
+            this._y = y;
+            this._z = z;
+            this._w = w;
         }
         Quaternion.slerp = function (qa, qb, qm, t) {
             return qm.copy(qa).slerp(qb, t);
@@ -2158,6 +2226,13 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         };
         return Quaternion;
     }());
+    function quat(x, y, z, w) {
+        if (x === void 0) { x = 0; }
+        if (y === void 0) { y = 0; }
+        if (z === void 0) { z = 0; }
+        if (w === void 0) { w = 1; }
+        return new Quaternion(x, y, z, w);
+    }
 
     (function (RotationOrders) {
         RotationOrders["XYZ"] = "XYZ";
@@ -2371,15 +2446,39 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         };
         return Euler;
     }());
+    function euler(x, y, z, order) {
+        if (x === void 0) { x = 0; }
+        if (y === void 0) { y = 0; }
+        if (z === void 0) { z = 0; }
+        if (order === void 0) { order = exports.RotationOrders.XYZ; }
+        return new Euler(x, y, z, order);
+    }
 
     var _vector = new Vector3();
     var Matrix3 = (function () {
-        function Matrix3() {
-            this.elements = new Float32Array([
-                1, 0, 0,
-                0, 1, 0,
-                0, 0, 1
-            ]);
+        function Matrix3(m00, m01, m02, m10, m11, m12, m20, m21, m22) {
+            if (m00 === void 0) { m00 = 1; }
+            if (m01 === void 0) { m01 = 0; }
+            if (m02 === void 0) { m02 = 0; }
+            if (m10 === void 0) { m10 = 0; }
+            if (m11 === void 0) { m11 = 1; }
+            if (m12 === void 0) { m12 = 0; }
+            if (m20 === void 0) { m20 = 0; }
+            if (m21 === void 0) { m21 = 0; }
+            if (m22 === void 0) { m22 = 1; }
+            if (m00 instanceof Float32Array) {
+                this.elements = m00;
+            }
+            else if (Array.isArray(m00)) {
+                this.elements = new Float32Array(m00);
+            }
+            else {
+                this.elements = new Float32Array([
+                    m00, m01, m02,
+                    m10, m11, m12,
+                    m20, m21, m22,
+                ]);
+            }
         }
         Matrix3.prototype.set = function (n11, n12, n13, n21, n22, n23, n31, n32, n33) {
             var te = this.elements;
@@ -2601,6 +2700,18 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         };
         return Matrix3;
     }());
+    function mat3(m00, m01, m02, m10, m11, m12, m20, m21, m22) {
+        if (m00 === void 0) { m00 = 1; }
+        if (m01 === void 0) { m01 = 0; }
+        if (m02 === void 0) { m02 = 0; }
+        if (m10 === void 0) { m10 = 0; }
+        if (m11 === void 0) { m11 = 1; }
+        if (m12 === void 0) { m12 = 0; }
+        if (m20 === void 0) { m20 = 0; }
+        if (m21 === void 0) { m21 = 0; }
+        if (m22 === void 0) { m22 = 1; }
+        return new Matrix3(m00, m01, m02, m10, m11, m12, m20, m21, m22);
+    }
 
     var Ray = (function () {
         function Ray(origin, direction) {
@@ -2771,11 +2882,16 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         };
         return Ray;
     }());
+    function ray(origin, direction) {
+        if (origin === void 0) { origin = new Vector3(); }
+        if (direction === void 0) { direction = new Vector3(); }
+        return new Ray(origin, direction);
+    }
 
     var Vector2 = (function () {
         function Vector2(x, y) {
             if (x === void 0) { x = 0; }
-            if (y === void 0) { y = 0; }
+            if (y === void 0) { y = x; }
             this.x = x;
             this.y = y;
         }
@@ -2915,6 +3031,11 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         };
         return Vector2;
     }());
+    function v2(x, y) {
+        if (x === void 0) { x = 0; }
+        if (y === void 0) { y = x; }
+        return new Vector2(x, y);
+    }
 
     var EventDispatcher = (function () {
         function EventDispatcher() {
@@ -2965,7 +3086,127 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         return EventDispatcher;
     }());
 
-    var devicePixelRatio = window.devicePixelRatio;
+    var SystemEvent = (function () {
+        function SystemEvent() {
+        }
+        return SystemEvent;
+    }());
+
+    (function (TouchEvent) {
+        TouchEvent["CLICK"] = "click";
+        TouchEvent["TouchDown"] = "mousedown";
+        TouchEvent["TouchMove"] = "mousemove";
+        TouchEvent["TouchOver"] = "mouseover";
+        TouchEvent["TouchOut"] = "mouseout";
+        TouchEvent["TouchUp"] = "mouseup";
+    })(exports.TouchEvent || (exports.TouchEvent = {}));
+    var Touch = (function () {
+        function Touch(x, y, id, type) {
+            this._id = id;
+            this.startPoint = v2(x, y);
+            this.point = v2(x, y);
+            this.prevPoint = v2(x, y);
+            this._type = type;
+        }
+        Touch.prototype.setTouchInfo = function (x, y, id) {
+            this._id = id;
+            this.prevPoint.copy(this.point);
+            this.point.set(x, y);
+        };
+        Object.defineProperty(Touch.prototype, "type", {
+            get: function () {
+                return this._type;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Touch.prototype, "location", {
+            get: function () {
+                return this.point.clone();
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Touch.prototype, "locationX", {
+            get: function () {
+                return this.point.x;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Touch.prototype, "locationY", {
+            get: function () {
+                return this.point.y;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Touch.prototype.getLocation = function () {
+            return this.point.clone();
+        };
+        Touch.prototype.getLocationX = function () {
+            return this.point.x;
+        };
+        Touch.prototype.getLocationY = function () {
+            return this.point.y;
+        };
+        Object.defineProperty(Touch.prototype, "prevLocation", {
+            get: function () {
+                return this.prevPoint.clone();
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Touch.prototype, "prevLocationX", {
+            get: function () {
+                return this.prevPoint.x;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Touch.prototype, "prevLocationY", {
+            get: function () {
+                return this.prevPoint.y;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Touch.prototype.getPrevLocation = function () {
+            return this.prevPoint.clone();
+        };
+        Touch.prototype.getPrevLocationX = function () {
+            return this.prevPoint.x;
+        };
+        Touch.prototype.getPrevLocationY = function () {
+            return this.prevPoint.y;
+        };
+        Object.defineProperty(Touch.prototype, "id", {
+            get: function () {
+                return this._id;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Touch.prototype.getID = function () {
+            return this._id;
+        };
+        Object.defineProperty(Touch.prototype, "delta", {
+            get: function () {
+                return this.point.sub(this.prevPoint);
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Touch.prototype.getDelta = function () {
+            return this.point.sub(this.prevPoint);
+        };
+        return Touch;
+    }());
+    function touch(x, y, id, type) {
+        return new Touch(x, y, id, type);
+    }
+
+    var dpi = window.devicePixelRatio;
     var winSize = {
         width: window.innerWidth,
         height: window.innerHeight
@@ -3003,9 +3244,16 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
             gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
         };
         WebGLRenderer.prototype.onResize = function () {
-            this.canvas.width = winSize.width;
-            this.canvas.height = winSize.height;
-            this.gl.viewport(0, 0, window.innerWidth, window.innerHeight);
+            var canvas = this.canvas;
+            var dpi = window.devicePixelRatio;
+            console.log('dpi', dpi);
+            var w = winSize.width;
+            var h = winSize.height;
+            canvas.width = w * dpi;
+            canvas.height = h * dpi;
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
+            this.gl.viewport(0, 0, canvas.width, canvas.height);
         };
         WebGLRenderer.create = function (canvas) {
             var renderer = new WebGLRenderer();
@@ -3053,6 +3301,30 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
                 }
                 requestAnimationFrame(_this.mainLoop);
             };
+            this.onClick = function (e) {
+                console.log('onClick', e);
+            };
+            this.onMouseDown = function (e) {
+                console.log('onMouseDown', e);
+            };
+            this.onMouseMove = function (e) {
+                console.log('onMouseMove', e);
+            };
+            this.onMouesOver = function (e) {
+                console.log('onMouesOver', e);
+            };
+            this.onMouseOut = function (e) {
+                console.log('onMouseOut', e);
+            };
+            this.onMouseUp = function (e) {
+                console.log('onMouseUp', e);
+            };
+            this.onResize = function () {
+                winSize.width = window.innerWidth;
+                winSize.height = window.innerHeight;
+                _this.renderer.onResize();
+                _this.currentScene && _this.currentScene.onResize();
+            };
             this.renderer = WebGLRenderer.create();
             document.body.appendChild(this.renderer.canvas);
             this.onResize();
@@ -3072,14 +3344,15 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         App.create = function () {
             return new App();
         };
-        App.prototype.onResize = function () {
-            winSize.width = window.innerWidth;
-            winSize.height = window.innerHeight;
-            this.renderer.onResize();
-            this.currentScene && this.currentScene.onResize();
-        };
         App.prototype.initEvent = function () {
-            window.onresize = this.onResize;
+            window.addEventListener('resize', this.onResize);
+            var canvas = this.renderer.canvas;
+            canvas.addEventListener(exports.TouchEvent.CLICK, this.onClick);
+            canvas.addEventListener(exports.TouchEvent.TouchDown, this.onMouseDown);
+            canvas.addEventListener(exports.TouchEvent.TouchMove, this.onMouseMove);
+            canvas.addEventListener(exports.TouchEvent.TouchOver, this.onMouesOver);
+            canvas.addEventListener(exports.TouchEvent.TouchOut, this.onMouseOut);
+            canvas.addEventListener(exports.TouchEvent.TouchUp, this.onMouseUp);
         };
         return App;
     }());
@@ -3470,6 +3743,19 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         };
         Scene.prototype._render = function () {
         };
+        Scene.prototype.onClick = function (t) {
+            console.log(t);
+        };
+        Scene.prototype.onMouseDown = function (t) {
+        };
+        Scene.prototype.onMouseMove = function (t) {
+        };
+        Scene.prototype.onMouesOver = function (t) {
+        };
+        Scene.prototype.onMouseOut = function (t) {
+        };
+        Scene.prototype.onMouseUp = function (t) {
+        };
         return Scene;
     }(Object3D));
 
@@ -3485,15 +3771,27 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
     exports.Scene = Scene;
     exports.Shader = Shader;
     exports.Sphere = Sphere;
+    exports.SystemEvent = SystemEvent;
+    exports.Touch = Touch;
     exports.Vector2 = Vector2;
     exports.Vector3 = Vector3;
     exports.WebGLRenderer = WebGLRenderer;
     exports._Math = _Math;
     exports.app = app;
+    exports.color = color;
     exports.compileProgram = compileProgram;
-    exports.devicePixelRatio = devicePixelRatio;
     exports.director = director;
+    exports.dpi = dpi;
+    exports.euler = euler;
+    exports.mat3 = mat3;
+    exports.mat4 = mat4;
+    exports.quat = quat;
+    exports.ray = ray;
     exports.setPrecision = setPrecision;
+    exports.sphere = sphere;
+    exports.touch = touch;
+    exports.v2 = v2;
+    exports.v3 = v3;
     exports.winSize = winSize;
 
     Object.defineProperty(exports, '__esModule', { value: true });

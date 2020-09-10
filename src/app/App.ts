@@ -5,7 +5,8 @@
 
 import { WebGLRenderer } from "../core/WebGLRenderer";
 import { Scene } from "../scene/Scene";
-import { winSize } from "./const";
+import { dpi, winSize } from "./const";
+import { touch, TouchEvent } from "../event/TouchEvent";
 
 class App {
 
@@ -27,6 +28,7 @@ class App {
         );
 
         document.body.appendChild(this.renderer.canvas);
+        // this.renderer.canvas.addEventListener('onMouse')
 
         this.onResize();
         this.initEvent();
@@ -53,16 +55,58 @@ class App {
         requestAnimationFrame(this.mainLoop);
     }
 
-    private onResize() {
+    private onClick = (e: MouseEvent) => {
+        // touch(e.clientX, e.clientY)
+        console.log('onClick', e);
+    }
+
+    private onMouseDown = (e: MouseEvent) => {
+        console.log('onMouseDown', e);
+
+    }
+
+    private onMouseMove = (e: MouseEvent) => {
+        console.log('onMouseMove', e);
+
+    }
+
+    private onMouesOver = (e: MouseEvent) => {
+        console.log('onMouesOver', e);
+
+    }
+
+    private onMouseOut = (e: MouseEvent) => {
+        console.log('onMouseOut', e);
+
+    }
+
+    private onMouseUp = (e: MouseEvent) => {
+        console.log('onMouseUp', e);
+
+    }
+
+    private onResize = () => {
         winSize.width = window.innerWidth;
         winSize.height = window.innerHeight;
+        // @ts-ignore
+        // hycv.dpi = window.devicePixelRatio;
 
         this.renderer.onResize();
         this.currentScene && this.currentScene.onResize();
     }
 
     private initEvent() {
-        window.onresize = this.onResize;
+        // window.onresize = this.onResize;
+        window.addEventListener('resize', this.onResize);
+
+        const canvas = this.renderer.canvas;
+
+        canvas.addEventListener(TouchEvent.CLICK, this.onClick);
+        canvas.addEventListener(TouchEvent.TouchDown, this.onMouseDown);
+        canvas.addEventListener(TouchEvent.TouchMove, this.onMouseMove);
+        canvas.addEventListener(TouchEvent.TouchOver, this.onMouesOver);
+        canvas.addEventListener(TouchEvent.TouchOut, this.onMouseOut);
+        canvas.addEventListener(TouchEvent.TouchUp, this.onMouseUp);
     }
 }
 

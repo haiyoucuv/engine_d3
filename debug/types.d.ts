@@ -1,5 +1,5 @@
 
-declare module engine{
+declare module hycv{
 export  function clamp(value: number, min: number, max: number): number;
 
 export  class Quaternion {
@@ -44,9 +44,12 @@ export  class Quaternion {
     private onChangeCallback;
 }
 
+export  function quat(x?: number, y?: number, z?: number, w?: number): Quaternion;
+
 export  class Matrix4 {
     elements: Float32Array;
-    constructor();
+    readonly isMatrix4: true;
+    constructor(m00?: number | Float32Array | number[], m01?: number, m02?: number, m03?: number, m10?: number, m11?: number, m12?: number, m13?: number, m20?: number, m21?: number, m22?: number, m23?: number, m30?: number, m31?: number, m32?: number, m33?: number);
     /**
      * 初始化本矩阵
      */
@@ -228,8 +231,14 @@ export  class Matrix4 {
     /**
      * Multiply the matrix for project vertex to plane from the right.(Projected by parallel light.)
      * @param normX, normY, normZ The normal vector of the plane.(Not necessary to be normalized.)
+     * @param normY
+     * @param normZ
      * @param planeX, planeY, planeZ The coordinate of arbitrary points on a plane.
+     * @param planeY
+     * @param planeZ
      * @param lightX, lightY, lightZ The vector of the direction of light.(Not necessary to be normalized.)
+     * @param lightY
+     * @param lightZ
      * @return this
      */
     dropShadowDirectionally(normX: any, normY: any, normZ: any, planeX: any, planeY: any, planeZ: any, lightX: any, lightY: any, lightZ: any): this;
@@ -239,6 +248,8 @@ export  class Matrix4 {
     determinant(): number;
     extractRotation(m: any): this;
 }
+
+export  function mat4(m00?: number | Float32Array | number[], m01?: number, m02?: number, m03?: number, m10?: number, m11?: number, m12?: number, m13?: number, m20?: number, m21?: number, m22?: number, m23?: number, m30?: number, m31?: number, m32?: number, m33?: number): Matrix4;
 
 export  class EventDispatcher {
     private _listeners;
@@ -278,8 +289,8 @@ export  class Camera extends Object3D {
 
 export  class Matrix3 {
     elements: Float32Array;
-    isMatrix3: true;
-    constructor();
+    readonly isMatrix3: true;
+    constructor(m00?: number | Float32Array | number[], m01?: number, m02?: number, m10?: number, m11?: number, m12?: number, m20?: number, m21?: number, m22?: number);
     set(n11: any, n12: any, n13: any, n21: any, n22: any, n23: any, n31: any, n32: any, n33: any): this;
     identity(): this;
     clone(): Matrix3;
@@ -303,6 +314,8 @@ export  class Matrix3 {
     fromArray(array: any, offset?: number): this;
     toArray(array?: any[], offset?: number): any[];
 }
+
+export  function mat3(m00?: number | Float32Array | number[], m01?: number, m02?: number, m10?: number, m11?: number, m12?: number, m20?: number, m21?: number, m22?: number): Matrix3;
 
 export  class Vector3 {
     x: number;
@@ -375,6 +388,8 @@ export  class Vector3 {
     toArray(array?: number[], offset?: number): number[];
 }
 
+export  function v3(x?: number, y?: number, z?: number): Vector3;
+
 export  class Sphere {
     center: Vector3;
     radius: number;
@@ -394,6 +409,8 @@ export  class Sphere {
     translate(offset: Vector3): this;
     equals(sphere: Sphere): boolean;
 }
+
+export  function sphere(center?: Vector3, radius?: number): Sphere;
 
 export  class Box3 {
     min: Vector3;
@@ -622,7 +639,7 @@ export  class Color {
     r: number;
     g: number;
     b: number;
-    constructor(r: any, g?: any, b?: any);
+    constructor(r?: number | Color | string, g?: any, b?: any);
     set(value: any): this;
     setScalar(scalar: any): this;
     setHex(hex: any): this;
@@ -659,6 +676,8 @@ export  class Color {
     toJSON(): number;
 }
 
+export  function color(r?: any, g?: any, b?: any): Color;
+
 export  enum RotationOrders {
     XYZ = "XYZ",
     YZX = "YZX",
@@ -686,9 +705,9 @@ export  class Euler {
     clone(): Euler;
     copy(euler: Euler): this;
     setFromRotationMatrix(m: Matrix4, order: RotationOrders, update: any): this;
-    setFromQuaternion: (q: Quaternion, order: any, update: any) => any;
+    setFromQuaternion(q: Quaternion, order: any, update?: any): this;
     setFromVector3(v: any, order: RotationOrders): this;
-    reorder: (newOrder: any) => any;
+    reorder(newOrder: any): this;
     equals(euler: any): boolean;
     fromArray(array: any): this;
     toArray(array?: any[], offset?: number): any[];
@@ -696,6 +715,8 @@ export  class Euler {
     onChange(callback: any): this;
     onChangeCallback(): void;
 }
+
+export  function euler(x?: number, y?: number, z?: number, order?: RotationOrders): Euler;
 
 export  class Ray {
     origin: Vector3;
@@ -718,6 +739,8 @@ export  class Ray {
     applyMatrix4(matrix4: Matrix4): this;
     equals(ray: Ray): boolean;
 }
+
+export  function ray(origin?: Vector3, direction?: Vector3): Ray;
 
 export  class Vector2 {
     x: number;
@@ -756,13 +779,61 @@ export  class Vector2 {
     toArray(array?: any[], offset?: number): any[];
 }
 
+export  function v2(x?: number, y?: number): Vector2;
+
+export  class SystemEvent {
+    constructor();
+}
+
+export  enum TouchEvent {
+    CLICK = "click",
+    TouchDown = "mousedown",
+    TouchMove = "mousemove",
+    TouchOver = "mouseover",
+    TouchOut = "mouseout",
+    TouchUp = "mouseup"
+}
+
+export  class Touch {
+    private _id;
+    private startPoint;
+    private point;
+    private prevPoint;
+    _type: TouchEvent;
+    constructor(x: number, y: number, id: any, type: TouchEvent);
+    setTouchInfo(x: any, y: any, id: any): void;
+    get type(): TouchEvent;
+    get location(): Vector2;
+    get locationX(): number;
+    get locationY(): number;
+    getLocation(): Vector2;
+    getLocationX(): number;
+    getLocationY(): number;
+    get prevLocation(): Vector2;
+    get prevLocationX(): number;
+    get prevLocationY(): number;
+    getPrevLocation(): Vector2;
+    getPrevLocationX(): number;
+    getPrevLocationY(): number;
+    private get id();
+    getID(): any;
+    get delta(): Vector2;
+    getDelta(): Vector2;
+}
+
 export  class Scene extends Object3D {
     constructor();
     update(dt: any): void;
     protected _render(): void;
+    onClick: (e: any) => void;
+    onMouseDown: (e: any) => void;
+    onMouseMove: (e: any) => void;
+    onMouesOver(e: any): void;
+    onMouseOut: (e: any) => void;
+    onMouseUp: (e: any) => void;
 }
 
-export  let devicePixelRatio: number;
+export  let dpi: number;
 
 export  const winSize: {
     width: number;
@@ -792,6 +863,12 @@ export class App {
     static create(): App;
     private _lt;
     private mainLoop;
+    private onClick;
+    private onMouseDown;
+    private onMouseMove;
+    private onMouesOver;
+    private onMouseOut;
+    private onMouseUp;
     private onResize;
     private initEvent;
 }

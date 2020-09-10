@@ -94,3 +94,9 @@ export class Sphere {
     }
 }
 
+export function sphere(
+    center = new Vector3(),
+    radius: number = 0
+) {
+    return new Sphere(center, radius);
+}

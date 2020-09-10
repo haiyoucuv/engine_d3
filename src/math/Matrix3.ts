@@ -7,16 +7,32 @@ import { Vector3 } from "./Vector3";
 const _vector = new Vector3();
 
 export class Matrix3 {
-    public elements = new Float32Array([
-        1, 0, 0,
-        0, 1, 0,
-        0, 0, 1
-    ]);
+    public elements: Float32Array
 
-    public isMatrix3: true;
+    public readonly isMatrix3: true;
 
-    constructor() {
+    constructor(
+        m00: number | Float32Array | number[] = 1, m01: number = 0, m02: number = 0,
+        m10: number = 0, m11: number = 1, m12: number = 0,
+        m20: number = 0, m21: number = 0, m22: number = 1,
+    ) {
+        if (m00 instanceof Float32Array) {
+            this.elements = m00;
+        } else if (Array.isArray(m00)) {
+            this.elements = new Float32Array(m00);
+        } else {
+            this.elements = new Float32Array([
+                m00, m01, m02,
+                m10, m11, m12,
+                m20, m21, m22,
+            ]);
+        }
 
+        // this.elements = new Float32Array([
+        //     1, 0, 0,
+        //     0, 1, 0,
+        //     0, 0, 1
+        // ]);
     }
 
     public set(n11, n12, n13, n21, n22, n23, n31, n32, n33) {
@@ -366,4 +382,12 @@ export class Matrix3 {
 
     }
 
+}
+
+export function mat3(
+    m00: number | Float32Array | number[] = 1, m01: number = 0, m02: number = 0,
+    m10: number = 0, m11: number = 1, m12: number = 0,
+    m20: number = 0, m21: number = 0, m22: number = 1,
+) {
+    return new Matrix3(m00, m01, m02, m10, m11, m12, m20, m21, m22);
 }

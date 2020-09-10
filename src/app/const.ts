@@ -3,7 +3,8 @@
  * Copyright © 2020 haiyoucuv. All rights reserved.
  */
 
-export let devicePixelRatio = window.devicePixelRatio;
+export let dpi = window.devicePixelRatio;
+// export let dpi = 1;
 
 export const winSize = {
     width: window.innerWidth,

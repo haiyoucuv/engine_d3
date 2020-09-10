@@ -96,18 +96,22 @@
         const Scene = hycv.Scene;
         const Shader = hycv.Shader;
         const gl = hycv.app.renderer.gl;
+        const canvas = hycv.app.renderer.canvas;
         const winSize = hycv.winSize;
-        const Matrix4 = hycv.Matrix4;
-        const Vector3 = hycv.Vector3;
-        const Color = hycv.Color;
 
         class testScene extends Scene {
             constructor() {
                 super();
             }
 
+            isPause = false;
+
             init() {
                 super.init();
+
+                // canvas.addEventListener('click', () => {
+                //     this.isPause = !this.isPause;
+                // });
 
                 const VERTEX_SHADER_SOURCE = document.getElementById('vertex-shader').text;
                 const FRAGMENT_SHADER_SOURCE = document.getElementById('fragment-shader').text;
@@ -175,28 +179,34 @@
                 shader.uniforms.alpha = 0.1;
 
                 // 设置光照颜色
-                shader.uniforms.lightColor = new Color(1, 1, 1).toArray();
+                shader.uniforms.lightColor = hycv.color().toArray();
 
                 // 设置光照方向
-                const lightPos = new Vector3(-0.5, -0.5, -4);
+                const lightPos = hycv.v3(-0.5, -0.5, -4);
                 shader.uniforms.lightPos = lightPos.toArray();
 
-                const viewPos = this.viewPos = new Vector3(2, 2, -8);
+                const viewPos = this.viewPos = hycv.v3(2, 2, -8);
 
                 // mvp矩阵
-                const vp = new Matrix4();
+                const vp = this.vp = hycv.mat4();
                 vp.setPerspective(70, winSize.width / winSize.height, 1, 100);  // fov, aspect, near, far
-                vp.multiply(new Matrix4().setLookAt(viewPos, new Vector3(), new Vector3(0, 1, 0)));
+                vp.multiply(hycv.mat4().setLookAt(viewPos, hycv.v3(), hycv.v3(0, 1, 0)));
                 shader.uniforms.vp = vp.toArray();
 
                 // 模型矩阵
-                this.model = new Matrix4();
+                this.model = hycv.mat4();
                 shader.uniforms.model = this.model.toArray();
 
+            }
+            
+            onClick(e){
+            
             }
 
             update(dt) {
                 super.update(dt);
+
+                if (this.isPause) return;
 
                 this.model.rotate(1, 1, 1, 1);
                 this.shader.uniforms.model = this.model.toArray();
@@ -217,7 +227,11 @@
             }
 
             onResize() {
-
+                const vp = this.vp = hycv.mat4();
+                vp.setPerspective(70, winSize.width / winSize.height, 1, 100);  // fov, aspect, near, far
+                vp.multiply(hycv.mat4().setLookAt(this.viewPos, hycv.v3(), hycv.v3(0, 1, 0)));
+                this.shader.uniforms.vp = vp.toArray();
+                this.vp.setPerspective(70, winSize.width / winSize.height, 1, 100);  // fov, aspect, near, far
             }
         }
 

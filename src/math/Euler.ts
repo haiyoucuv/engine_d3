@@ -292,3 +292,12 @@ export class Euler {
 
     }
 }
+
+export function euler(
+    x: number = 0,
+    y: number = 0,
+    z: number = 0,
+    order: RotationOrders = RotationOrders.XYZ
+) {
+    return new Euler(x, y, z, order);
+}

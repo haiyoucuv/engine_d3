@@ -4,3 +4,6 @@
  */
 
 export * from './EventDispatcher';
+export * from './SystemEvent';
+export * from './TouchEvent';
+

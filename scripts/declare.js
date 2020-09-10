@@ -43,7 +43,7 @@ function compile(fileNames, options) {
 	;
 
 	const content = `
-declare module engine{
+declare module hycv{
 ${allExports}
 }
 `;

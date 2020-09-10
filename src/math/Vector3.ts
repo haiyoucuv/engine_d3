@@ -2,12 +2,11 @@ import { Matrix4 } from "./Matrix4";
 import { Camera } from "../camera/Camera";
 import { Matrix3 } from "./Matrix3";
 
-
 export class Vector3 {
     constructor(
         public x: number = 0,
-        public y: number = 0,
-        public z: number = 0
+        public y: number = x,
+        public z: number = x
     ) {
     }
 
@@ -284,4 +283,12 @@ export class Vector3 {
         array[offset + 2] = this.z;
         return array;
     };
+}
+
+/**
+ * 一个快速创建的方法
+ * @returns {Vector3}
+ */
+export function v3(x: number = 0, y: number = x, z: number = x) {
+    return new Vector3(x, y, z);
 }

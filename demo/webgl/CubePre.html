@@ -107,8 +107,8 @@
         // canvas.width = canvas.height = wSize;
         canvas.width = document.documentElement.clientWidth;
         canvas.height = document.documentElement.clientHeight;
-        canvas.width = canvas.clientWidth// * window.devicePixelRatio;
-        canvas.height = canvas.clientHeight// * window.devicePixelRatio;
+        canvas.width = canvas.clientWidth// * window.dpi;
+        canvas.height = canvas.clientHeight// * window.dpi;
 
         const gl = canvas.getContext('webgl', {
             antialias: true,
