@@ -3,7 +3,10 @@
  * Copyright © 2020 haiyoucuv. All rights reserved.
  */
 
-export class SystemEvent {
+import { EventDispatcher } from "./EventDispatcher";
+
+export class SystemEvent extends EventDispatcher {
     constructor() {
+        super();
     }
 }
