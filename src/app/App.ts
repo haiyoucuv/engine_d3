@@ -5,8 +5,17 @@
 
 import { WebGLRenderer } from "../core/WebGLRenderer";
 import { Scene } from "../scene/Scene";
-import { dpi, winSize } from "./const";
-import { touch, TouchEvent } from "../event/TouchEvent";
+import { winSize } from "./const";
+import { EventType, Touch } from "../event/TouchEvent";
+import TouchType = EventType.TouchType;
+
+const TouchFun = {
+    [TouchType.CLICK]: 'onClick',
+    [TouchType.TouchStart]: 'onTouchStart',
+    [TouchType.TouchMove]: 'onTouchMove',
+    [TouchType.TouchEnd]: 'onTouchEnd',
+    [TouchType.TouchCancel]: 'onTouchCancel',
+}
 
 class App {
 
@@ -28,7 +37,6 @@ class App {
         );
 
         document.body.appendChild(this.renderer.canvas);
-        // this.renderer.canvas.addEventListener('onMouse')
 
         this.onResize();
         this.initEvent();
@@ -56,38 +64,37 @@ class App {
     }
 
     private onClick = (e: MouseEvent) => {
-        // touch(e.clientX, e.clientY)
         console.log('onClick', e);
     }
 
-    private onMouseDown = (e: MouseEvent) => {
-        console.log('onMouseDown', e);
+    private touches: { [key: string]: Touch } = {};
+    private onTouchEvent = (e: TouchEvent) => {
+        const type = e.type;
+        const points = [e.changedTouches[0]];
+        const body = document.body;
+        const canvasRect = this.renderer.canvas.getBoundingClientRect();
+        const adjustX = canvasRect.left - (body.scrollLeft || window.scrollX || 0);
+        const adjustY = canvasRect.top - (body.scrollTop || window.scrollY || 0);
 
-    }
+        const updateTouch = (type == 'touchstart')
+            ? (x, y, id) => this.touches[id] = new Touch(x, y, id)
+            : (x, y, id) => this.touches[id].setTouchInfo(x, y);
 
-    private onMouseMove = (e: MouseEvent) => {
-        console.log('onMouseMove', e);
+        const onFunc = TouchFun[type];
 
-    }
-
-    private onMouesOver = (e: MouseEvent) => {
-        console.log('onMouesOver', e);
-
-    }
-
-    private onMouseOut = (e: MouseEvent) => {
-        console.log('onMouseOut', e);
-
-    }
-
-    private onMouseUp = (e: MouseEvent) => {
-        console.log('onMouseUp', e);
-
+        points.forEach((value) => {
+            const x = (value.clientX - adjustX) * window.devicePixelRatio;
+            const y = (value.clientY - adjustY) * window.devicePixelRatio;
+            const id = `t${value.identifier}`;
+            updateTouch(x, y, id);
+            this.currentScene[onFunc](this.touches[id]);
+        });
     }
 
     private onResize = () => {
         winSize.width = window.innerWidth;
         winSize.height = window.innerHeight;
+
         // @ts-ignore
         // hycv.dpi = window.devicePixelRatio;
 
@@ -101,12 +108,11 @@ class App {
 
         const canvas = this.renderer.canvas;
 
-        canvas.addEventListener(TouchEvent.CLICK, this.onClick);
-        canvas.addEventListener(TouchEvent.TouchDown, this.onMouseDown);
-        canvas.addEventListener(TouchEvent.TouchMove, this.onMouseMove);
-        canvas.addEventListener(TouchEvent.TouchOver, this.onMouesOver);
-        canvas.addEventListener(TouchEvent.TouchOut, this.onMouseOut);
-        canvas.addEventListener(TouchEvent.TouchUp, this.onMouseUp);
+        // canvas.addEventListener(TouchType.CLICK, this.onClick);
+        canvas.addEventListener(TouchType.TouchStart, this.onTouchEvent);
+        canvas.addEventListener(TouchType.TouchMove, this.onTouchEvent);
+        canvas.addEventListener(TouchType.TouchEnd, this.onTouchEvent);
+        canvas.addEventListener(TouchType.TouchCancel, this.onTouchEvent);
     }
 }
 

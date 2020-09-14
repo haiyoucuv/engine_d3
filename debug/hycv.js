@@ -3092,34 +3092,27 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         return SystemEvent;
     }());
 
-    (function (TouchEvent) {
-        TouchEvent["CLICK"] = "click";
-        TouchEvent["TouchDown"] = "mousedown";
-        TouchEvent["TouchMove"] = "mousemove";
-        TouchEvent["TouchOver"] = "mouseover";
-        TouchEvent["TouchOut"] = "mouseout";
-        TouchEvent["TouchUp"] = "mouseup";
-    })(exports.TouchEvent || (exports.TouchEvent = {}));
+    (function (EventType) {
+        var TouchType;
+        (function (TouchType) {
+            TouchType["CLICK"] = "click";
+            TouchType["TouchStart"] = "touchstart";
+            TouchType["TouchMove"] = "touchmove";
+            TouchType["TouchEnd"] = "touchend";
+            TouchType["TouchCancel"] = "touchcancel";
+        })(TouchType = EventType.TouchType || (EventType.TouchType = {}));
+    })(exports.EventType || (exports.EventType = {}));
     var Touch = (function () {
-        function Touch(x, y, id, type) {
+        function Touch(x, y, id) {
             this._id = id;
             this.startPoint = v2(x, y);
             this.point = v2(x, y);
             this.prevPoint = v2(x, y);
-            this._type = type;
         }
-        Touch.prototype.setTouchInfo = function (x, y, id) {
-            this._id = id;
+        Touch.prototype.setTouchInfo = function (x, y) {
             this.prevPoint.copy(this.point);
             this.point.set(x, y);
         };
-        Object.defineProperty(Touch.prototype, "type", {
-            get: function () {
-                return this._type;
-            },
-            enumerable: false,
-            configurable: true
-        });
         Object.defineProperty(Touch.prototype, "location", {
             get: function () {
                 return this.point.clone();
@@ -3188,22 +3181,22 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
             configurable: true
         });
         Touch.prototype.getID = function () {
-            return this._id;
+            return this.id;
         };
         Object.defineProperty(Touch.prototype, "delta", {
             get: function () {
-                return this.point.sub(this.prevPoint);
+                return this.point.clone().sub(this.prevPoint);
             },
             enumerable: false,
             configurable: true
         });
         Touch.prototype.getDelta = function () {
-            return this.point.sub(this.prevPoint);
+            return this.delta;
         };
         return Touch;
     }());
-    function touch(x, y, id, type) {
-        return new Touch(x, y, id, type);
+    function touch(x, y, id) {
+        return new Touch(x, y, id);
     }
 
     var dpi = window.devicePixelRatio;
@@ -3287,6 +3280,15 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         return WebGLRenderer;
     }());
 
+    var _a;
+    var TouchType = exports.EventType.TouchType;
+    var TouchFun = (_a = {},
+        _a[TouchType.CLICK] = 'onClick',
+        _a[TouchType.TouchStart] = 'onTouchStart',
+        _a[TouchType.TouchMove] = 'onTouchMove',
+        _a[TouchType.TouchEnd] = 'onTouchEnd',
+        _a[TouchType.TouchCancel] = 'onTouchCancel',
+        _a);
     var App = (function () {
         function App() {
             var _this = this;
@@ -3304,20 +3306,25 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
             this.onClick = function (e) {
                 console.log('onClick', e);
             };
-            this.onMouseDown = function (e) {
-                console.log('onMouseDown', e);
-            };
-            this.onMouseMove = function (e) {
-                console.log('onMouseMove', e);
-            };
-            this.onMouesOver = function (e) {
-                console.log('onMouesOver', e);
-            };
-            this.onMouseOut = function (e) {
-                console.log('onMouseOut', e);
-            };
-            this.onMouseUp = function (e) {
-                console.log('onMouseUp', e);
+            this.touches = {};
+            this.onTouchEvent = function (e) {
+                var type = e.type;
+                var points = [e.changedTouches[0]];
+                var body = document.body;
+                var canvasRect = _this.renderer.canvas.getBoundingClientRect();
+                var adjustX = canvasRect.left - (body.scrollLeft || window.scrollX || 0);
+                var adjustY = canvasRect.top - (body.scrollTop || window.scrollY || 0);
+                var updateTouch = (type == 'touchstart')
+                    ? function (x, y, id) { return _this.touches[id] = new Touch(x, y, id); }
+                    : function (x, y, id) { return _this.touches[id].setTouchInfo(x, y); };
+                var onFunc = TouchFun[type];
+                points.forEach(function (value) {
+                    var x = (value.clientX - adjustX) * window.devicePixelRatio;
+                    var y = (value.clientY - adjustY) * window.devicePixelRatio;
+                    var id = "t" + value.identifier;
+                    updateTouch(x, y, id);
+                    _this.currentScene[onFunc](_this.touches[id]);
+                });
             };
             this.onResize = function () {
                 winSize.width = window.innerWidth;
@@ -3347,12 +3354,10 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         App.prototype.initEvent = function () {
             window.addEventListener('resize', this.onResize);
             var canvas = this.renderer.canvas;
-            canvas.addEventListener(exports.TouchEvent.CLICK, this.onClick);
-            canvas.addEventListener(exports.TouchEvent.TouchDown, this.onMouseDown);
-            canvas.addEventListener(exports.TouchEvent.TouchMove, this.onMouseMove);
-            canvas.addEventListener(exports.TouchEvent.TouchOver, this.onMouesOver);
-            canvas.addEventListener(exports.TouchEvent.TouchOut, this.onMouseOut);
-            canvas.addEventListener(exports.TouchEvent.TouchUp, this.onMouseUp);
+            canvas.addEventListener(TouchType.TouchStart, this.onTouchEvent);
+            canvas.addEventListener(TouchType.TouchMove, this.onTouchEvent);
+            canvas.addEventListener(TouchType.TouchEnd, this.onTouchEvent);
+            canvas.addEventListener(TouchType.TouchCancel, this.onTouchEvent);
         };
         return App;
     }());
@@ -3744,17 +3749,14 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         Scene.prototype._render = function () {
         };
         Scene.prototype.onClick = function (t) {
-            console.log(t);
         };
-        Scene.prototype.onMouseDown = function (t) {
+        Scene.prototype.onTouchStart = function (t) {
         };
-        Scene.prototype.onMouseMove = function (t) {
+        Scene.prototype.onTouchMove = function (t) {
         };
-        Scene.prototype.onMouesOver = function (t) {
+        Scene.prototype.onTouchEnd = function (t) {
         };
-        Scene.prototype.onMouseOut = function (t) {
-        };
-        Scene.prototype.onMouseUp = function (t) {
+        Scene.prototype.onTouchCancel = function (t) {
         };
         return Scene;
     }(Object3D));

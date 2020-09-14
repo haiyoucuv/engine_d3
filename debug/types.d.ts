@@ -785,13 +785,14 @@ export  class SystemEvent {
     constructor();
 }
 
-export  enum TouchEvent {
-    CLICK = "click",
-    TouchDown = "mousedown",
-    TouchMove = "mousemove",
-    TouchOver = "mouseover",
-    TouchOut = "mouseout",
-    TouchUp = "mouseup"
+export  namespace EventType {
+    enum TouchType {
+        CLICK = "click",
+        TouchStart = "touchstart",
+        TouchMove = "touchmove",
+        TouchEnd = "touchend",
+        TouchCancel = "touchcancel"
+    }
 }
 
 export  class Touch {
@@ -799,10 +800,8 @@ export  class Touch {
     private startPoint;
     private point;
     private prevPoint;
-    _type: TouchEvent;
-    constructor(x: number, y: number, id: any, type: TouchEvent);
-    setTouchInfo(x: any, y: any, id: any): void;
-    get type(): TouchEvent;
+    constructor(x: number, y: number, id: any);
+    setTouchInfo(x: any, y: any): void;
     get location(): Vector2;
     get locationX(): number;
     get locationY(): number;
@@ -821,16 +820,17 @@ export  class Touch {
     getDelta(): Vector2;
 }
 
+export  function touch(x: number, y: number, id: any): Touch;
+
 export  class Scene extends Object3D {
     constructor();
     update(dt: any): void;
     protected _render(): void;
-    onClick: (e: any) => void;
-    onMouseDown: (e: any) => void;
-    onMouseMove: (e: any) => void;
-    onMouesOver(e: any): void;
-    onMouseOut: (e: any) => void;
-    onMouseUp: (e: any) => void;
+    onClick(t: Touch): void;
+    onTouchStart(t: Touch): void;
+    onTouchMove(t: Touch): void;
+    onTouchEnd(t: Touch): void;
+    onTouchCancel(t: Touch): void;
 }
 
 export  let dpi: number;
@@ -864,11 +864,11 @@ export class App {
     private _lt;
     private mainLoop;
     private onClick;
-    private onMouseDown;
-    private onMouseMove;
-    private onMouesOver;
-    private onMouseOut;
-    private onMouseUp;
+    private touches;
+    private onTouchStart;
+    private onTouchMove;
+    private onTouchEnd;
+    private onTouchCancel;
     private onResize;
     private initEvent;
 }

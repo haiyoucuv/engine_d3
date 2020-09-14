@@ -20,28 +20,25 @@ export class Scene extends Object3D {
     }
 
     public onClick(t: Touch) {
-        console.log(t);
-    }
-
-    public onMouseDown(t: Touch) {
 
     }
 
-    public onMouseMove(t: Touch) {
+    public onTouchStart(t: Touch) {
 
     }
 
-    public onMouesOver(t: Touch) {
+    public onTouchMove(t: Touch) {
 
     }
 
-    public onMouseOut(t: Touch) {
+    public onTouchEnd(t: Touch) {
 
     }
 
-    public onMouseUp(t: Touch) {
+    public onTouchCancel(t: Touch) {
 
     }
+
 }
 
 

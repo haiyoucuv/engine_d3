@@ -5,13 +5,14 @@
 
 import { v2, Vector2 } from "../math/Vector2";
 
-export enum TouchEvent {
-    CLICK = 'click',
-    TouchDown = 'mousedown',
-    TouchMove = 'mousemove',
-    TouchOver = 'mouseover',
-    TouchOut = 'mouseout',
-    TouchUp = 'mouseup',
+export namespace EventType {
+    export enum TouchType {
+        CLICK = 'click',
+        TouchStart = 'touchstart',
+        TouchMove = 'touchmove',
+        TouchEnd = 'touchend',
+        TouchCancel = 'touchcancel',
+    }
 }
 
 export class Touch {
@@ -21,24 +22,16 @@ export class Touch {
     private point: Vector2;
     private prevPoint: Vector2;
 
-    public _type: TouchEvent;
-
-    constructor(x: number, y: number, id, type: TouchEvent) {
+    constructor(x: number, y: number, id) {
         this._id = id;
         this.startPoint = v2(x, y);
         this.point = v2(x, y);
         this.prevPoint = v2(x, y);
-        this._type = type;
     }
 
-    public setTouchInfo(x, y, id) {
-        this._id = id;
+    public setTouchInfo(x, y) {
         this.prevPoint.copy(this.point);
         this.point.set(x, y);
-    }
-
-    public get type(): TouchEvent {
-        return this._type;
     }
 
     public get location(): Vector2 {
@@ -94,20 +87,20 @@ export class Touch {
     }
 
     public getID() {
-        return this._id;
+        return this.id;
     }
 
     public get delta(): Vector2 {
-        return this.point.sub(this.prevPoint);
+        return this.point.clone().sub(this.prevPoint);
     }
 
     public getDelta() {
-        return this.point.sub(this.prevPoint);
+        return this.delta;
     }
 
 }
 
 
-export function touch(x: number, y: number, id, type: TouchEvent) {
-    return new Touch(x, y, id, type);
+export function touch(x: number, y: number, id): Touch {
+    return new Touch(x, y, id);
 }
