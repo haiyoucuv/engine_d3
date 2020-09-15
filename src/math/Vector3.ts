@@ -10,32 +10,80 @@ export class Vector3 {
     ) {
     }
 
-    set(x: number, y: number, z: number): this {
+    public static get ZERO() {
+        return new Vector3();
+    }
+
+    public static get ONE() {
+        return new Vector3(1);
+    }
+
+    public static get UP() {
+        return new Vector3(0, 1, 0);
+    }
+
+    public static get RIGHT() {
+        return new Vector3(1, 0, 0);
+    }
+
+    static get FORWARD() {
+        return new Vector3(0, 0, 1);
+    }
+
+    public zero() {
+        this.x = this.y = this.z = 0;
+        return this;
+    }
+
+    public one() {
+        this.x = this.y = this.z = 1;
+        return this;
+    }
+
+    public up() {
+        this.x = this.y = 0;
+        this.z = 1;
+        return this;
+    }
+
+    public right() {
+        this.x = this.z = 0;
+        this.y = 1;
+        return this;
+    }
+
+    public forward() {
+        this.x = this.y = 0;
+        this.z = 1;
+        return this;
+    }
+
+    public set(x: number, y: number, z: number): this {
         this.x = x;
         this.y = y;
         this.z = z;
         return this
     }
 
-    copy(v: Vector3): this {
+    public copy(v: Vector3): this {
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
         return this
     }
 
-    clone(): Vector3 {
+    public clone(): Vector3 {
         return new Vector3().copy(this);
     }
 
-    add(v: Vector3) {
+    public add(v: Vector3) {
         this.x += v.x;
         this.y += v.y;
         this.z += v.z;
         return this;
     }
 
-    addScalar(s: number) {
+    public addScalar(s: number) {
 
         this.x += s;
         this.y += s;
@@ -45,21 +93,21 @@ export class Vector3 {
 
     }
 
-    addVectors(a: Vector3, b: Vector3) {
+    public addVectors(a: Vector3, b: Vector3) {
         this.x = a.x + b.x;
         this.y = a.y + b.y;
         this.z = a.z + b.z;
         return this;
     }
 
-    addScaledVector(v: Vector3, s: number) {
+    public addScaledVector(v: Vector3, s: number) {
         this.x += v.x * s;
         this.y += v.y * s;
         this.z += v.z * s;
         return this;
     }
 
-    sub(v: Vector3) {
+    public sub(v: Vector3) {
         this.x -= v.x;
         this.y -= v.y;
         this.z -= v.z;
@@ -67,21 +115,21 @@ export class Vector3 {
 
     };
 
-    subScalar(s) {
+    public subScalar(s) {
         this.x -= s;
         this.y -= s;
         this.z -= s;
         return this;
     };
 
-    subVectors(a: Vector3, b: Vector3) {
+    public subVectors(a: Vector3, b: Vector3) {
         this.x = a.x - b.x;
         this.y = a.y - b.y;
         this.z = a.z - b.z;
         return this;
     };
 
-    multiplyScalar(scalar: number) {
+    public multiplyScalar(scalar: number) {
 
         this.x *= scalar;
         this.y *= scalar;
@@ -91,29 +139,29 @@ export class Vector3 {
 
     };
 
-    multiplyVectors(a: Vector3, b: Vector3) {
+    public multiplyVectors(a: Vector3, b: Vector3) {
         this.x = a.x * b.x;
         this.y = a.y * b.y;
         this.z = a.z * b.z;
         return this;
     };
 
-    divide(v: Vector3) {
+    public divide(v: Vector3) {
         this.x /= v.x;
         this.y /= v.y;
         this.z /= v.z;
         return this;
     };
 
-    divideScalar(scalar: number) {
+    public divideScalar(scalar: number) {
         return this.multiplyScalar(1 / scalar);
     };
 
-    cross(v: Vector3) {
+    public cross(v: Vector3) {
         return this.crossVectors(this, v);
     };
 
-    crossVectors(a: Vector3, b: Vector3) {
+    public crossVectors(a: Vector3, b: Vector3) {
         const ax = a.x, ay = a.y, az = a.z;
         const bx = b.x, by = b.y, bz = b.z;
 
@@ -123,25 +171,25 @@ export class Vector3 {
         return this;
     };
 
-    dot(v: Vector3) {
+    public dot(v: Vector3) {
         return this.x * v.x + this.y * v.y + this.z * v.z;
     }
 
     /**
      * 长度
      */
-    length() {
+    public length() {
         return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
     }
 
-    lengthSq() {
+    public lengthSq() {
         return this.x * this.x + this.y * this.y + this.z * this.z;
     }
 
     /**
      * 标准化，长度为1
      */
-    normalize() {
+    public normalize() {
         const scalar = 1 / (this.length() || 1);
         this.x *= scalar;
         this.y *= scalar;
@@ -149,41 +197,41 @@ export class Vector3 {
         return this;
     }
 
-    distanceTo(v: Vector3) {
+    public distanceTo(v: Vector3) {
         return Math.sqrt(this.distanceToSquared(v));
     };
 
-    distanceToSquared(v: Vector3) {
+    public distanceToSquared(v: Vector3) {
         const dx = this.x - v.x, dy = this.y - v.y, dz = this.z - v.z;
         return dx * dx + dy * dy + dz * dz;
     };
 
-    min(v: Vector3) {
+    public min(v: Vector3) {
         this.x = Math.min(this.x, v.x);
         this.y = Math.min(this.y, v.y);
         this.z = Math.min(this.z, v.z);
         return this;
     };
 
-    max(v: Vector3) {
+    public max(v: Vector3) {
         this.x = Math.max(this.x, v.x);
         this.y = Math.max(this.y, v.y);
         this.z = Math.max(this.z, v.z);
         return this;
     };
 
-    clamp(min: Vector3, max: Vector3) {
+    public clamp(min: Vector3, max: Vector3) {
         this.x = Math.max(min.x, Math.min(max.x, this.x));
         this.y = Math.max(min.y, Math.min(max.y, this.y));
         this.z = Math.max(min.z, Math.min(max.z, this.z));
         return this;
     };
 
-    clampScalar(minVal: number, maxVal: number) {
+    public clampScalar(minVal: number, maxVal: number) {
         return this.clamp(new Vector3(minVal, minVal, minVal), new Vector3(maxVal, maxVal, maxVal));
     }
 
-    clampLength(min: number, max: number) {
+    public clampLength(min: number, max: number) {
         return this.divideScalar(this.length() || 1).multiplyScalar(Math.max(min, Math.min(max, length)));
     };
 
@@ -191,7 +239,7 @@ export class Vector3 {
      * applyMatrix4
      * @param m
      */
-    applyMatrix4(m: Matrix4) {
+    public applyMatrix4(m: Matrix4) {
         const x = this.x, y = this.y, z = this.z;
         const e = m.elements;
         const w = 1 / (e[3] * x + e[7] * y + e[11] * z + e[15]);
@@ -205,7 +253,7 @@ export class Vector3 {
      * applyMatrix3
      * @param m
      */
-    applyMatrix3(m: Matrix3) {
+    public applyMatrix3(m: Matrix3) {
         const x = this.x, y = this.y, z = this.z;
         const e = m.elements;
         this.x = (e[0] * x + e[4] * y + e[8] * z + e[12]);
@@ -218,7 +266,7 @@ export class Vector3 {
      * 从矩阵获得位置
      * @param m
      */
-    setFromMatrixPosition(m: Matrix4) {
+    public setFromMatrixPosition(m: Matrix4) {
         const e = m.elements;
         this.x = e[12];
         this.y = e[13];
@@ -230,7 +278,7 @@ export class Vector3 {
      * 从矩阵获得缩放值
      * @param m
      */
-    setFromMatrixScale(m: Matrix4) {
+    public setFromMatrixScale(m: Matrix4) {
         const sx = this.setFromMatrixColumn(m, 0).length();
         const sy = this.setFromMatrixColumn(m, 1).length();
         const sz = this.setFromMatrixColumn(m, 2).length();
@@ -240,11 +288,11 @@ export class Vector3 {
         return this;
     }
 
-    setFromMatrixColumn(m: Matrix4, index: number) {
+    public setFromMatrixColumn(m: Matrix4, index: number) {
         return this.fromArray(m.elements, index * 4);
     };
 
-    transformDirection(m: Matrix4) {
+    public transformDirection(m: Matrix4) {
         const x = this.x, y = this.y, z = this.z;
         const e = m.elements;
         this.x = e[0] * x + e[4] * y + e[8] * z;
@@ -257,27 +305,27 @@ export class Vector3 {
      * 转换成屏幕坐标，范围-1到1，可根据stage转换成stage上坐标，或者canvas坐标
      * @param camera
      */
-    project(camera: Camera) {
+    public project(camera: Camera) {
         return this.applyMatrix4(camera.worldMatrixInverse).applyMatrix4(camera.projectionMatrix);
     };
 
-    unproject(camera: Camera) {
+    public unproject(camera: Camera) {
         return this.applyMatrix4(new Matrix4().setInverseOf(camera.projectionMatrix)).applyMatrix4(camera._worldMatrix);
     };
 
 
-    equals(v: Vector3) {
+    public equals(v: Vector3) {
         return ((v.x === this.x) && (v.y === this.y) && (v.z === this.z));
     }
 
-    fromArray(array: number[] | Float32Array, offset: number = 0) {
+    public fromArray(array: number[] | Float32Array, offset: number = 0) {
         this.x = array[offset];
         this.y = array[offset + 1];
         this.z = array[offset + 2];
         return this;
     };
 
-    toArray(array: number[] = [], offset: number = 0) {
+    public toArray(array: number[] = [], offset: number = 0) {
         array[offset] = this.x;
         array[offset + 1] = this.y;
         array[offset + 2] = this.z;
