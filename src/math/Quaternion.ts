@@ -144,7 +144,7 @@ export class Quaternion {
 
     }
 
-    setFromEuler(euler, update?) {
+    setFromEuler(euler, update = true) {
 
         const x = euler._x, y = euler._y, z = euler._z, order = euler.order;
 
@@ -204,7 +204,7 @@ export class Quaternion {
 
         }
 
-        if (update !== false) this.onChangeCallback();
+        if (update) this.onChangeCallback();
 
         return this;
 
