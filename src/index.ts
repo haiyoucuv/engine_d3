@@ -3,8 +3,9 @@
  * Copyright © 2020 haiyoucuv. All rights reserved.
  */
 
-export * from './math/index';
-export * from './event/index';
-export * from './app/index';
-export * from './core/index';
-export * from './scene/index';
+export * from './math';
+export * from './event';
+export * from './app';
+export * from './base';
+export * from './core';
+export * from './scene';

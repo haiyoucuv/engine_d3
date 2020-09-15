@@ -1,6 +1,7 @@
 import { Vector3 } from './Vector3';
 import { Sphere } from './Sphere';
-import { Matrix4, Object3D } from '../index';
+import { Matrix4 } from '../index';
+import { Object3D } from "../base/Object3D";
 
 export class Box3 {
     constructor(
@@ -151,7 +152,7 @@ export class Box3 {
     //         if (geometry !== undefined && geometry._vertices) {
     //             const vertices = geometry._vertices;
     //             for (let i = 0; i < vertices.length; i += 3) {
-    //                 v1.set(vertices[i], vertices[i + 1], vertices[i + 2]).applyMatrix4(node._worldMatrix);
+    //                 v1.set(vertices[i], vertices[i + 1], vertices[i + 2]).applyMatrix4(node.worldMatrix);
     //                 scope.expandByPoint(v1);
     //             }
     //         }

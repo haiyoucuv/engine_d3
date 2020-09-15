@@ -1,22 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a363f917-efa6-42f5-b290-8e66e76c061d" name="Default Changelist" comment="封装TouchEvent">
-      <change afterPath="$PROJECT_DIR$/src/base/HashObject.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/base/index.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/event/EventEmit.ts" afterDir="false" />
+    <list default="true" id="a363f917-efa6-42f5-b290-8e66e76c061d" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/debug/hycv.js" beforeDir="false" afterPath="$PROJECT_DIR$/debug/hycv.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/debug/hycv.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/debug/hycv.js.map" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/debug/types.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/debug/types.d.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/test.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/test.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/App.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/App.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/Object3D.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/base/Object3D.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/event/EventDispatcher.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/event/SystemEvent.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/event/SystemEvent.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/event/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/event/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scene/Scene.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/scene/Scene.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/base/Object3D.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/base/Object3D.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/camera/Camera.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/camera/Camera.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/math/Box3.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/math/Box3.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,13 +66,6 @@
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/core/shader" />
-      <recent name="$PROJECT_DIR$/src/app" />
-      <recent name="$PROJECT_DIR$/src/UI" />
-      <recent name="$PROJECT_DIR$/demo/img" />
-      <recent name="$PROJECT_DIR$/demo" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/base" />
       <recent name="$PROJECT_DIR$/src/math" />
@@ -85,8 +73,15 @@
       <recent name="$PROJECT_DIR$/demo/lib" />
       <recent name="$PROJECT_DIR$/src/core" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/core/shader" />
+      <recent name="$PROJECT_DIR$/src/app" />
+      <recent name="$PROJECT_DIR$/src/UI" />
+      <recent name="$PROJECT_DIR$/demo/img" />
+      <recent name="$PROJECT_DIR$/demo" />
+    </key>
   </component>
-  <component name="RunManager" selected="npm.dev">
+  <component name="RunManager" selected="npm.declare">
     <configuration name="CubePre.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/d3/demo/webgl/CubePre.html" useBuiltInWebServerPort="true">
       <method v="2" />
     </configuration>
@@ -133,8 +128,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="npm.declare" />
-        <item itemvalue="JavaScript Debug.test.html" />
         <item itemvalue="npm.dev" />
+        <item itemvalue="JavaScript Debug.test.html" />
         <item itemvalue="JavaScript Debug.CubePre.html" />
         <item itemvalue="npm.ts" />
       </list>
@@ -208,7 +203,9 @@
       <workItem from="1599740220581" duration="788000" />
       <workItem from="1599789001371" duration="44000" />
       <workItem from="1600073478256" duration="13857000" />
-      <workItem from="1600135404335" duration="10472000" />
+      <workItem from="1600135404335" duration="13201000" />
+      <workItem from="1600157671040" duration="7663000" />
+      <workItem from="1600170417117" duration="124000" />
     </task>
     <task id="LOCAL-00001" summary="one step">
       <created>1599485044905</created>
@@ -252,7 +249,42 @@
       <option name="project" value="LOCAL" />
       <updated>1600089715454</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Use EventEmit">
+      <created>1600154257704</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1600154257704</updated>
+    </task>
+    <task id="LOCAL-00008" summary="增加一些方法">
+      <created>1600163448387</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1600163448387</updated>
+    </task>
+    <task id="LOCAL-00009" summary="setFromQuaternion">
+      <created>1600165737835</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1600165737835</updated>
+    </task>
+    <task id="LOCAL-00010" summary="setFromEuler">
+      <created>1600165753070</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1600165753070</updated>
+    </task>
+    <task id="LOCAL-00011" summary="_worldMatrix to worldMatrix">
+      <created>1600168546827</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1600168546827</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -265,40 +297,50 @@
     <MESSAGE value="TouchEvent" />
     <MESSAGE value="封住TouchEvent" />
     <MESSAGE value="封装TouchEvent" />
-    <option name="LAST_COMMIT_MESSAGE" value="封装TouchEvent" />
+    <MESSAGE value="Use EventEmit" />
+    <MESSAGE value="增加一些方法" />
+    <MESSAGE value="setFromQuaternion" />
+    <MESSAGE value="setFromEuler" />
+    <MESSAGE value="_worldMatrix to worldMatrix" />
+    <option name="LAST_COMMIT_MESSAGE" value="_worldMatrix to worldMatrix" />
   </component>
   <component name="WindowStateProjectService">
     <state x="0" y="262" width="1071" height="701" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1599478475778">
       <screen x="0" y="0" width="1920" height="1200" />
     </state>
     <state x="0" y="262" width="1071" height="701" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1200@0.0.1920.1200" timestamp="1599478475778" />
-    <state x="488" y="202" key="CommitChangelistDialog2" timestamp="1600089744639">
-      <screen x="30" y="23" width="1890" height="1177" />
+    <state x="465" y="202" key="CommitChangelistDialog2" timestamp="1600168546701">
+      <screen x="0" y="23" width="1920" height="1177" />
     </state>
     <state x="70" y="172" key="CommitChangelistDialog2/0.0.1920.1200@0.0.1920.1200" timestamp="1599562449912" />
-    <state x="488" y="202" key="CommitChangelistDialog2/30.23.1890.1177@30.23.1890.1177" timestamp="1600089744639" />
-    <state width="236" height="1057" key="GridCell.Tab.0.bottom" timestamp="1600154170366">
-      <screen x="30" y="23" width="1890" height="1177" />
+    <state x="465" y="202" key="CommitChangelistDialog2/0.23.1920.1177@0.23.1920.1177" timestamp="1600168546701" />
+    <state x="488" y="202" key="CommitChangelistDialog2/30.23.1890.1177@30.23.1890.1177" timestamp="1600154257476" />
+    <state width="223" height="1057" key="GridCell.Tab.0.bottom" timestamp="1600170409704">
+      <screen x="0" y="23" width="1920" height="1177" />
     </state>
     <state width="171" height="537" key="GridCell.Tab.0.bottom/0.0.1920.1200@0.0.1920.1200" timestamp="1599642694814" />
+    <state width="223" height="1057" key="GridCell.Tab.0.bottom/0.23.1920.1177@0.23.1920.1177" timestamp="1600170409704" />
     <state width="316" height="608" key="GridCell.Tab.0.bottom/30.23.1650.1027@30.23.1650.1027" timestamp="1599409213045" />
     <state width="236" height="1057" key="GridCell.Tab.0.bottom/30.23.1890.1177@30.23.1890.1177" timestamp="1600154170366" />
-    <state width="236" height="1057" key="GridCell.Tab.0.center" timestamp="1600154170365">
-      <screen x="30" y="23" width="1890" height="1177" />
+    <state width="223" height="1057" key="GridCell.Tab.0.center" timestamp="1600170409703">
+      <screen x="0" y="23" width="1920" height="1177" />
     </state>
     <state width="171" height="537" key="GridCell.Tab.0.center/0.0.1920.1200@0.0.1920.1200" timestamp="1599642694813" />
+    <state width="223" height="1057" key="GridCell.Tab.0.center/0.23.1920.1177@0.23.1920.1177" timestamp="1600170409703" />
     <state width="316" height="608" key="GridCell.Tab.0.center/30.23.1650.1027@30.23.1650.1027" timestamp="1599409213044" />
     <state width="236" height="1057" key="GridCell.Tab.0.center/30.23.1890.1177@30.23.1890.1177" timestamp="1600154170365" />
-    <state width="236" height="1057" key="GridCell.Tab.0.left" timestamp="1600154170365">
-      <screen x="30" y="23" width="1890" height="1177" />
+    <state width="223" height="1057" key="GridCell.Tab.0.left" timestamp="1600170409702">
+      <screen x="0" y="23" width="1920" height="1177" />
     </state>
     <state width="171" height="537" key="GridCell.Tab.0.left/0.0.1920.1200@0.0.1920.1200" timestamp="1599642694812" />
+    <state width="223" height="1057" key="GridCell.Tab.0.left/0.23.1920.1177@0.23.1920.1177" timestamp="1600170409702" />
     <state width="316" height="608" key="GridCell.Tab.0.left/30.23.1650.1027@30.23.1650.1027" timestamp="1599409213044" />
     <state width="236" height="1057" key="GridCell.Tab.0.left/30.23.1890.1177@30.23.1890.1177" timestamp="1600154170365" />
-    <state width="236" height="1057" key="GridCell.Tab.0.right" timestamp="1600154170366">
-      <screen x="30" y="23" width="1890" height="1177" />
+    <state width="223" height="1057" key="GridCell.Tab.0.right" timestamp="1600170409703">
+      <screen x="0" y="23" width="1920" height="1177" />
     </state>
     <state width="171" height="537" key="GridCell.Tab.0.right/0.0.1920.1200@0.0.1920.1200" timestamp="1599642694814" />
+    <state width="223" height="1057" key="GridCell.Tab.0.right/0.23.1920.1177@0.23.1920.1177" timestamp="1600170409703" />
     <state width="316" height="608" key="GridCell.Tab.0.right/30.23.1650.1027@30.23.1650.1027" timestamp="1599409213045" />
     <state width="236" height="1057" key="GridCell.Tab.0.right/30.23.1890.1177@30.23.1890.1177" timestamp="1600154170366" />
     <state x="0" y="239" key="SettingsEditor" timestamp="1599562355176">
@@ -309,11 +351,12 @@
       <screen x="30" y="23" width="1650" height="1027" />
     </state>
     <state width="500" height="445" key="SwitcherDM/30.23.1650.1027@30.23.1650.1027" timestamp="1599407114571" />
-    <state x="90" y="356" key="Vcs.Push.Dialog.v2" timestamp="1600089716563">
-      <screen x="30" y="23" width="1890" height="1177" />
+    <state x="61" y="356" key="Vcs.Push.Dialog.v2" timestamp="1600168548703">
+      <screen x="0" y="23" width="1920" height="1177" />
     </state>
     <state x="61" y="340" key="Vcs.Push.Dialog.v2/0.0.1920.1200@0.0.1920.1200" timestamp="1599562451509" />
-    <state x="90" y="356" key="Vcs.Push.Dialog.v2/30.23.1890.1177@30.23.1890.1177" timestamp="1600089716563" />
+    <state x="61" y="356" key="Vcs.Push.Dialog.v2/0.23.1920.1177@0.23.1920.1177" timestamp="1600168548703" />
+    <state x="90" y="356" key="Vcs.Push.Dialog.v2/30.23.1890.1177@30.23.1890.1177" timestamp="1600154259071" />
     <state x="318" y="531" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1600089705191">
       <screen x="30" y="23" width="1890" height="1177" />
     </state>
@@ -330,10 +373,11 @@
       <screen x="30" y="23" width="1890" height="1177" />
     </state>
     <state x="1001" y="484" width="587" height="502" key="find.popup/30.23.1890.1177@30.23.1890.1177" timestamp="1599460873565" />
-    <state x="154" y="289" width="670" height="664" key="search.everywhere.popup" timestamp="1600082141807">
-      <screen x="30" y="23" width="1890" height="1177" />
+    <state x="126" y="289" width="681" height="664" key="search.everywhere.popup" timestamp="1600168296110">
+      <screen x="0" y="23" width="1920" height="1177" />
     </state>
     <state x="126" y="271" width="670" height="676" key="search.everywhere.popup/0.0.1920.1200@0.0.1920.1200" timestamp="1599616563302" />
+    <state x="126" y="289" width="681" height="664" key="search.everywhere.popup/0.23.1920.1177@0.23.1920.1177" timestamp="1600168296110" />
     <state x="154" y="289" width="670" height="664" key="search.everywhere.popup/30.23.1890.1177@30.23.1890.1177" timestamp="1600082141807" />
   </component>
 </project>

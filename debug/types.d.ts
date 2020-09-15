@@ -21,7 +21,7 @@ export  class Quaternion {
     set(x: any, y: any, z: any, w: any): this;
     clone(): Quaternion;
     copy(quaternion: any): this;
-    setFromEuler(euler: any, update?: any): this;
+    setFromEuler(euler: any, update?: boolean): this;
     setFromAxisAngle(axis: any, angle: any): this;
     setFromRotationMatrix(m: any): this;
     setFromUnitVectors: (vFrom: any, vTo: any) => any;
@@ -251,6 +251,182 @@ export  class Matrix4 {
 
 export  function mat4(m00?: number | Float32Array | number[], m01?: number, m02?: number, m03?: number, m10?: number, m11?: number, m12?: number, m13?: number, m20?: number, m21?: number, m22?: number, m23?: number, m30?: number, m31?: number, m32?: number, m33?: number): Matrix4;
 
+export  abstract class HashObject {
+    protected _instanceId: number;
+    protected _instanceType: string;
+    protected static _object_id: number;
+    constructor();
+    /**
+     * 每一个对象都会有一个唯一的id码。
+     * @property instanceId
+     * @public
+     * @since 1.0.0
+     * @return {number}
+     * @readonly
+     * @example
+     *      //获取 对象唯一码
+     *      trace(this.instanceId);
+     */
+    get instanceId(): number;
+    /**
+     * 每一个类都有一个实例类型字符串，通过这个字符串，你能知道这个实例是从哪个类实例而来
+     * @property instanceType
+     * @since 1.0.3
+     * @public
+     * @return {string}
+     * @readonly
+     */
+    get instanceType(): string;
+    /**
+     * 销毁一个对象
+     * 销毁之前一定要从显示对象移除，否则将会出错
+     * @method destroy
+     * @since 2.0.0
+     * @public
+     * @return {void}
+     */
+    abstract destroy(): void;
+}
+
+export  class EventEmit extends HashObject {
+    private _emit;
+    constructor();
+    /**
+     * 添加监听
+     * @param {string | number} type
+     * @param {Function} fn
+     * @param context
+     * @param once
+     * @returns {EE}
+     */
+    on(type: string | number, fn: Function, context?: any, once?: boolean): EE;
+    /**
+     * 是否有此类型监听
+     * @param {string | number} type
+     * @returns {boolean}
+     */
+    hasEvent(type: string | number): boolean;
+    /**
+     * 移除监听
+     * @param {string | number} type
+     * @param {Function} fn
+     * @param context
+     */
+    off(type: string | number, fn: Function, context?: any): void;
+    /**
+     * 移除所有监听
+     */
+    offAll(): void;
+    /**
+     * 移除某一类型的所有事件
+     * @param {string | number} type
+     */
+    offByType(type: string | number): void;
+    /**
+     * 触发事件
+     * @param type
+     * @param data
+     */
+    emit(type: string | number, data?: any): void;
+    destroy(): void;
+}
+
+export class EE {
+    fn: Function;
+    context: any;
+    once: boolean;
+    constructor(fn: Function, context: any, once?: boolean);
+}
+
+export {};
+
+export  enum RotationOrders {
+    XYZ = "XYZ",
+    YZX = "YZX",
+    ZXY = "ZXY",
+    XZY = "XZY",
+    YXZ = "YXZ",
+    ZYX = "ZYX"
+}
+
+export  class Euler {
+    private _x;
+    private _y;
+    private _z;
+    private _order;
+    constructor(_x?: number, _y?: number, _z?: number, _order?: RotationOrders);
+    get x(): number;
+    set x(value: number);
+    get y(): number;
+    set y(value: number);
+    get z(): number;
+    set z(value: number);
+    get order(): RotationOrders;
+    set order(value: RotationOrders);
+    set(x: any, y: any, z: any, order: any): this;
+    clone(): Euler;
+    copy(euler: Euler): this;
+    setFromRotationMatrix(m: Matrix4, order: RotationOrders, update?: boolean): this;
+    setFromQuaternion(q: Quaternion, order: any, update?: boolean): this;
+    setFromVector3(v: any, order: RotationOrders): this;
+    reorder(newOrder: any): this;
+    equals(euler: any): boolean;
+    fromArray(array: any): this;
+    toArray(array?: any[], offset?: number): any[];
+    toVector3(optionalResult: any): any;
+    onChange(callback: any): this;
+    onChangeCallback(): void;
+}
+
+export  function euler(x?: number, y?: number, z?: number, order?: RotationOrders): Euler;
+
+export  class Object3D extends EventEmit {
+    type: string;
+    name: string;
+    parent: Object3D;
+    children: Object3D[];
+    up: Vector3;
+    position: Vector3;
+    rotation: Euler;
+    quat: Quaternion;
+    scale: Vector3;
+    alpha: number;
+    visible: boolean;
+    private worldMatrixNeedsUpdate;
+    private matrixAutoUpdate;
+    /**
+     * 世界矩阵
+     */
+    worldMatrix: Matrix4;
+    /**
+     * 本地矩阵
+     */
+    matrix: Matrix4;
+    constructor();
+    private onQuatChange;
+    private onRotationChange;
+    /**
+     * 跟新本地矩阵
+     */
+    updateMatrix(): void;
+    /**
+     * 向下更新worldMatrix
+     */
+    updateMatrixWorld(force: any): void;
+    /**
+     * 更新worldMatrix
+     * @param updateParents
+     * @param updateChildren
+     */
+    updateWorldMatrix(updateParents: any, updateChildren: any): void;
+    init(): void;
+    update(dt: any): void;
+    render(): void;
+    protected _render(): void;
+    destroy(): void;
+    onResize(): void;
+}
+
 export  class Camera extends Object3D {
     worldMatrixInverse: any;
     matrixWorldInverse: any;
@@ -294,6 +470,16 @@ export  class Vector3 {
     y: number;
     z: number;
     constructor(x?: number, y?: number, z?: number);
+    static get ZERO(): Vector3;
+    static get ONE(): Vector3;
+    static get UP(): Vector3;
+    static get RIGHT(): Vector3;
+    static get FORWARD(): Vector3;
+    zero(): this;
+    one(): this;
+    up(): this;
+    right(): this;
+    forward(): this;
     set(x: number, y: number, z: number): this;
     copy(v: Vector3): this;
     clone(): Vector3;
@@ -650,46 +836,6 @@ export  class Color {
 
 export  function color(r?: any, g?: any, b?: any): Color;
 
-export  enum RotationOrders {
-    XYZ = "XYZ",
-    YZX = "YZX",
-    ZXY = "ZXY",
-    XZY = "XZY",
-    YXZ = "YXZ",
-    ZYX = "ZYX"
-}
-
-export  class Euler {
-    private _x;
-    private _y;
-    private _z;
-    private _order;
-    constructor(_x?: number, _y?: number, _z?: number, _order?: RotationOrders);
-    get x(): number;
-    set x(value: number);
-    get y(): number;
-    set y(value: number);
-    get z(): number;
-    set z(value: number);
-    get order(): RotationOrders;
-    set order(value: RotationOrders);
-    set(x: any, y: any, z: any, order: any): this;
-    clone(): Euler;
-    copy(euler: Euler): this;
-    setFromRotationMatrix(m: Matrix4, order: RotationOrders, update: any): this;
-    setFromQuaternion(q: Quaternion, order: any, update?: any): this;
-    setFromVector3(v: any, order: RotationOrders): this;
-    reorder(newOrder: any): this;
-    equals(euler: any): boolean;
-    fromArray(array: any): this;
-    toArray(array?: any[], offset?: number): any[];
-    toVector3(optionalResult: any): any;
-    onChange(callback: any): this;
-    onChangeCallback(): void;
-}
-
-export  function euler(x?: number, y?: number, z?: number, order?: RotationOrders): Euler;
-
 export  class Ray {
     origin: Vector3;
     direction: Vector3;
@@ -753,95 +899,6 @@ export  class Vector2 {
 
 export  function v2(x?: number, y?: number): Vector2;
 
-export  abstract class HashObject {
-    protected _instanceId: number;
-    protected _instanceType: string;
-    protected static _object_id: number;
-    constructor();
-    /**
-     * 每一个对象都会有一个唯一的id码。
-     * @property instanceId
-     * @public
-     * @since 1.0.0
-     * @return {number}
-     * @readonly
-     * @example
-     *      //获取 对象唯一码
-     *      trace(this.instanceId);
-     */
-    get instanceId(): number;
-    /**
-     * 每一个类都有一个实例类型字符串，通过这个字符串，你能知道这个实例是从哪个类实例而来
-     * @property instanceType
-     * @since 1.0.3
-     * @public
-     * @return {string}
-     * @readonly
-     */
-    get instanceType(): string;
-    /**
-     * 销毁一个对象
-     * 销毁之前一定要从显示对象移除，否则将会出错
-     * @method destroy
-     * @since 2.0.0
-     * @public
-     * @return {void}
-     */
-    abstract destroy(): void;
-}
-
-export  class EventEmit extends HashObject {
-    private _emit;
-    constructor();
-    /**
-     * 添加监听
-     * @param {string | number} type
-     * @param {Function} fn
-     * @param context
-     * @param once
-     * @returns {EE}
-     */
-    on(type: string | number, fn: Function, context?: any, once?: boolean): EE;
-    /**
-     * 是否有此类型监听
-     * @param {string | number} type
-     * @returns {boolean}
-     */
-    hasEvent(type: string | number): boolean;
-    /**
-     * 移除监听
-     * @param {string | number} type
-     * @param {Function} fn
-     * @param context
-     */
-    off(type: string | number, fn: Function, context?: any): void;
-    /**
-     * 移除所有监听
-     */
-    offAll(): void;
-    /**
-     * 移除某一类型的所有事件
-     * @param {string | number} type
-     */
-    offByType(type: string | number): void;
-    /**
-     * 触发事件
-     * @param type
-     * @param data
-     */
-    emit(type: string | number, data?: any): void;
-    destroy(): void;
-}
-
-export class EE {
-    fn: Function;
-    context: any;
-    once: boolean;
-    constructor(fn: Function, context: any, once?: boolean);
-}
-
-export {};
-
 export  class SystemEvent extends EventEmit {
     constructor();
 }
@@ -882,25 +939,6 @@ export  class Touch {
 }
 
 export  function touch(x: number, y: number, id: any): Touch;
-
-export  class Object3D extends EventEmit {
-    /**
-     * 世界矩阵
-     */
-    _worldMatrix: Matrix4;
-    /**
-     * 本地矩阵
-     */
-    _localMatrix: Matrix4;
-    parent: Object3D;
-    constructor();
-    init(): void;
-    update(dt: any): void;
-    render(): void;
-    protected _render(): void;
-    destroy(): void;
-    onResize(): void;
-}
 
 export  class Scene extends Object3D {
     constructor();

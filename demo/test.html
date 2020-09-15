@@ -96,8 +96,8 @@
     <script>
         const Scene = hycv.Scene;
         const Shader = hycv.Shader;
+        const Object3D = hycv.Object3D;
         const gl = hycv.app.renderer.gl;
-        const canvas = hycv.app.renderer.canvas;
         const winSize = hycv.winSize;
 
         class testScene extends Scene {
@@ -184,9 +184,11 @@
 
                 const viewPos = this.viewPos = hycv.v3(2, 2, -5);
 
+                this.cube = new Object3D();
+                
                 // mvp矩阵
                 const vp = this.vp = hycv.mat4();
-                vp.setPerspective(45, winSize.width / winSize.height, 1, 100);  // fov, aspect, near, far
+                vp.setPerspective(60, winSize.width / winSize.height, 1, 100);  // fov, aspect, near, far
                 vp.multiply(hycv.mat4().setLookAt(viewPos, hycv.v3(), hycv.v3(0, 1, 0)));
                 shader.uniforms.vp = vp.toArray();
 

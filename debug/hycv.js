@@ -819,6 +819,64 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
             this.y = y;
             this.z = z;
         }
+        Object.defineProperty(Vector3, "ZERO", {
+            get: function () {
+                return new Vector3();
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Vector3, "ONE", {
+            get: function () {
+                return new Vector3(1);
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Vector3, "UP", {
+            get: function () {
+                return new Vector3(0, 1, 0);
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Vector3, "RIGHT", {
+            get: function () {
+                return new Vector3(1, 0, 0);
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Vector3, "FORWARD", {
+            get: function () {
+                return new Vector3(0, 0, 1);
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Vector3.prototype.zero = function () {
+            this.x = this.y = this.z = 0;
+            return this;
+        };
+        Vector3.prototype.one = function () {
+            this.x = this.y = this.z = 1;
+            return this;
+        };
+        Vector3.prototype.up = function () {
+            this.x = this.y = 0;
+            this.z = 1;
+            return this;
+        };
+        Vector3.prototype.right = function () {
+            this.x = this.z = 0;
+            this.y = 1;
+            return this;
+        };
+        Vector3.prototype.forward = function () {
+            this.x = this.y = 0;
+            this.z = 1;
+            return this;
+        };
         Vector3.prototype.set = function (x, y, z) {
             this.x = x;
             this.y = y;
@@ -1003,7 +1061,7 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
             return this.applyMatrix4(camera.worldMatrixInverse).applyMatrix4(camera.projectionMatrix);
         };
         Vector3.prototype.unproject = function (camera) {
-            return this.applyMatrix4(new Matrix4().setInverseOf(camera.projectionMatrix)).applyMatrix4(camera._worldMatrix);
+            return this.applyMatrix4(new Matrix4().setInverseOf(camera.projectionMatrix)).applyMatrix4(camera.worldMatrix);
         };
         Vector3.prototype.equals = function (v) {
             return ((v.x === this.x) && (v.y === this.y) && (v.z === this.z));
@@ -1994,6 +2052,7 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
             return this;
         };
         Quaternion.prototype.setFromEuler = function (euler, update) {
+            if (update === void 0) { update = true; }
             var x = euler._x, y = euler._y, z = euler._z, order = euler.order;
             var cos = Math.cos;
             var sin = Math.sin;
@@ -2039,7 +2098,7 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
                 this._z = c1 * c2 * s3 + s1 * s2 * c3;
                 this._w = c1 * c2 * c3 + s1 * s2 * s3;
             }
-            if (update !== false)
+            if (update)
                 this.onChangeCallback();
             return this;
         };
@@ -2317,6 +2376,7 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
             return this;
         };
         Euler.prototype.setFromRotationMatrix = function (m, order, update) {
+            if (update === void 0) { update = true; }
             var te = m.elements;
             var m11 = te[0], m12 = te[4], m13 = te[8];
             var m21 = te[1], m22 = te[5], m23 = te[9];
@@ -2392,11 +2452,12 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
                 console.warn('Euler: .setFromRotationMatrix() given unsupported order: ' + order);
             }
             this._order = order;
-            if (update !== false)
+            if (update)
                 this.onChangeCallback();
             return this;
         };
         Euler.prototype.setFromQuaternion = function (q, order, update) {
+            if (update === void 0) { update = true; }
             var matrix = new Matrix4();
             matrix.makeRotationFromQuaternion(q);
             return this.setFromRotationMatrix(matrix, order, update);
@@ -3440,6 +3501,93 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
     }());
     var director = Director.create();
 
+    var Object3D = (function (_super) {
+        tslib.__extends(Object3D, _super);
+        function Object3D() {
+            var _this = _super.call(this) || this;
+            _this.type = 'Object3D';
+            _this.name = '';
+            _this.parent = null;
+            _this.children = [];
+            _this.up = Vector3.UP;
+            _this.position = Vector3.ZERO;
+            _this.rotation = new Euler();
+            _this.quat = new Quaternion();
+            _this.scale = Vector3.ONE;
+            _this.alpha = 1;
+            _this.visible = true;
+            _this.worldMatrixNeedsUpdate = false;
+            _this.matrixAutoUpdate = true;
+            _this.worldMatrix = new Matrix4();
+            _this.matrix = new Matrix4();
+            _this.onQuatChange = function () {
+                _this.rotation.setFromQuaternion(_this.quat, undefined, false);
+            };
+            _this.onRotationChange = function () {
+                _this.quat.setFromEuler(_this.rotation, false);
+            };
+            _this.quat.onChange(_this.onQuatChange);
+            _this.rotation.onChange(_this.onRotationChange);
+            return _this;
+        }
+        Object3D.prototype.updateMatrix = function () {
+            this.matrix.compose(this.position, this.quat, this.scale);
+            this.worldMatrixNeedsUpdate = true;
+        };
+        Object3D.prototype.updateMatrixWorld = function (force) {
+            if (this.matrixAutoUpdate)
+                this.updateMatrix();
+            if (this.worldMatrixNeedsUpdate || force) {
+                if (this.parent === null) {
+                    this.worldMatrix.copy(this.matrix);
+                }
+                else {
+                    this.worldMatrix.multiplyMatrices(this.parent.worldMatrix, this.matrix);
+                }
+                this.worldMatrixNeedsUpdate = false;
+                force = true;
+            }
+            var children = this.children;
+            for (var i = 0, l = children.length; i < l; i++) {
+                children[i].updateMatrixWorld(force);
+            }
+        };
+        Object3D.prototype.updateWorldMatrix = function (updateParents, updateChildren) {
+            var parent = this.parent;
+            if (updateParents && parent !== null) {
+                parent.updateWorldMatrix(true, false);
+            }
+            if (this.matrixAutoUpdate)
+                this.updateMatrix();
+            if (this.parent === null) {
+                this.worldMatrix.copy(this.matrix);
+            }
+            else {
+                this.worldMatrix.multiplyMatrices(this.parent.worldMatrix, this.matrix);
+            }
+            if (updateChildren) {
+                var children = this.children;
+                for (var i = 0, l = children.length; i < l; i++) {
+                    children[i].updateWorldMatrix(false, true);
+                }
+            }
+        };
+        Object3D.prototype.init = function () {
+        };
+        Object3D.prototype.update = function (dt) {
+        };
+        Object3D.prototype.render = function () {
+            this._render();
+        };
+        Object3D.prototype._render = function () {
+        };
+        Object3D.prototype.destroy = function () {
+        };
+        Object3D.prototype.onResize = function () {
+        };
+        return Object3D;
+    }(EventEmit));
+
     function loadShader(gl, type, source) {
         var shader = gl.createShader(type);
         if (shader == null) {
@@ -3769,30 +3917,6 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         return Shader;
     }());
 
-    var Object3D = (function (_super) {
-        tslib.__extends(Object3D, _super);
-        function Object3D() {
-            var _this = _super.call(this) || this;
-            _this._worldMatrix = new Matrix4();
-            _this._localMatrix = new Matrix4();
-            return _this;
-        }
-        Object3D.prototype.init = function () {
-        };
-        Object3D.prototype.update = function (dt) {
-        };
-        Object3D.prototype.render = function () {
-            this._render();
-        };
-        Object3D.prototype._render = function () {
-        };
-        Object3D.prototype.destroy = function () {
-        };
-        Object3D.prototype.onResize = function () {
-        };
-        return Object3D;
-    }(EventEmit));
-
     var Scene = (function (_super) {
         tslib.__extends(Scene, _super);
         function Scene() {
@@ -3819,8 +3943,10 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
     exports.Color = Color;
     exports.Euler = Euler;
     exports.EventEmit = EventEmit;
+    exports.HashObject = HashObject;
     exports.Matrix3 = Matrix3;
     exports.Matrix4 = Matrix4;
+    exports.Object3D = Object3D;
     exports.Quaternion = Quaternion;
     exports.Ray = Ray;
     exports.Scene = Scene;
