@@ -310,7 +310,7 @@ export class Vector3 {
     };
 
     public unproject(camera: Camera) {
-        return this.applyMatrix4(new Matrix4().setInverseOf(camera.projectionMatrix)).applyMatrix4(camera._worldMatrix);
+        return this.applyMatrix4(new Matrix4().setInverseOf(camera.projectionMatrix)).applyMatrix4(camera.worldMatrix);
     };
 
 
