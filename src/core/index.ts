@@ -5,5 +5,4 @@
 
 export * from './shader/ShaderTools'
 export * from './WebGLRenderer';
-export * from './Object3D';
 export * from './shader/Shader';

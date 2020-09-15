@@ -3,8 +3,8 @@
  * Copyright © 2020 haiyoucuv. All rights reserved.
  */
 
-import { Object3D } from "../core/Object3D";
 import { Touch } from "../event/TouchEvent";
+import { Object3D } from "../base/Object3D";
 
 export class Scene extends Object3D {
     constructor() {

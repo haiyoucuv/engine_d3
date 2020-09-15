@@ -3,10 +3,10 @@
  * Copyright © 2020 haiyoucuv. All rights reserved.
  */
 
-import { EventDispatcher } from "../event/EventDispatcher";
+import { EventEmit } from "../event/EventEmit";
 import { Matrix4 } from "../math/Matrix4";
 
-export class Object3D extends EventDispatcher {
+export class Object3D extends EventEmit {
 
     /**
      * 世界矩阵

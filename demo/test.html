@@ -20,7 +20,7 @@
     </style>
 </head>
 <body>
-<!--    <div style="height: 100px"></div>-->
+    <!--    <div style="height: 100px"></div>-->
     <!-- 帧率检测 -->
     <script src="lib/stats.js"></script>
     
@@ -121,12 +121,12 @@
 
                 // 顶点数据
                 const vertex = new Float32Array([
-                    1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0,  // v0-v1-v2-v3 front
-                    1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0,  // v0-v3-v4-v5 right
-                    1.0, 1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0,  // v0-v5-v6-v1 up
-                    -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0,  // v1-v6-v7-v2 left
-                    -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0,  // v7-v4-v3-v2 down
-                    1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0   // v4-v7-v6-v5 back
+                    0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5,  // v0-v1-v2-v3 front
+                    0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5,  // v0-v3-v4-v5 right
+                    0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5,  // v0-v5-v6-v1 up
+                    -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5,  // v1-v6-v7-v2 left
+                    -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5,  // v7-v4-v3-v2 down
+                    0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5   // v4-v7-v6-v5 back
                 ]);
 
                 // 颜色
@@ -179,25 +179,28 @@
                 shader.uniforms.lightColor = hycv.color().toArray();
 
                 // 设置光照方向
-                const lightPos = hycv.v3(-0.5, -0.5, -4);
+                const lightPos = hycv.v3(2, 2, -5);
                 shader.uniforms.lightPos = lightPos.toArray();
 
-                const viewPos = this.viewPos = hycv.v3(2, 2, -8);
+                const viewPos = this.viewPos = hycv.v3(2, 2, -5);
 
                 // mvp矩阵
                 const vp = this.vp = hycv.mat4();
-                vp.setPerspective(70, winSize.width / winSize.height, 1, 100);  // fov, aspect, near, far
+                vp.setPerspective(45, winSize.width / winSize.height, 1, 100);  // fov, aspect, near, far
                 vp.multiply(hycv.mat4().setLookAt(viewPos, hycv.v3(), hycv.v3(0, 1, 0)));
                 shader.uniforms.vp = vp.toArray();
 
                 // 模型矩阵
                 this.model = hycv.mat4();
                 shader.uniforms.model = this.model.toArray();
-                
             }
 
             onClick(e) {
 
+            }
+
+            pause() {
+                this.isPause = !this.isPause;
             }
 
             onTouchStart(t) {
@@ -217,14 +220,13 @@
 
                 if (this.isPause) return;
 
-                // this.model.rotate(1, 1, 1, 1);
+                this.model.rotate(1, 1, 1, 1);
                 this.shader.uniforms.model = this.model.toArray();
 
                 const normalMat = this.model.clone().invert().transpose();
                 this.shader.uniforms.normalMat = normalMat.toArray();
 
                 this.shader.uniforms.viewPos = this.viewPos.toArray();
-
 
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
                 gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_BYTE, 0); // 从数组数据渲染图元

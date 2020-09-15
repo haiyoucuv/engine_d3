@@ -3037,60 +3037,114 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         return new Vector2(x, y);
     }
 
-    var EventDispatcher = (function () {
-        function EventDispatcher() {
-            this._listeners = {};
+    var HashObject = (function () {
+        function HashObject() {
+            this._instanceId = 0;
+            this._instanceType = "HashObject";
+            this._instanceId = HashObject._object_id++;
         }
-        EventDispatcher.prototype.addEventListener = function (type, listener) {
-            if (this._listeners === undefined)
-                this._listeners = {};
-            var listeners = this._listeners;
-            if (listeners[type] === undefined) {
-                listeners[type] = [];
-            }
-            if (listeners[type].indexOf(listener) === -1) {
-                listeners[type].push(listener);
-            }
-        };
-        EventDispatcher.prototype.hasEventListener = function (type, listener) {
-            if (this._listeners === undefined)
-                return false;
-            var listeners = this._listeners;
-            return listeners[type] !== undefined && listeners[type].indexOf(listener) !== -1;
-        };
-        EventDispatcher.prototype.removeEventListener = function (type, listener) {
-            if (this._listeners === undefined)
-                return;
-            var listeners = this._listeners;
-            var listenerArray = listeners[type];
-            if (listenerArray !== undefined) {
-                var index = listenerArray.indexOf(listener);
-                if (index !== -1) {
-                    listenerArray.splice(index, 1);
-                }
-            }
-        };
-        EventDispatcher.prototype.dispatchEvent = function (event) {
-            if (this._listeners === undefined)
-                return;
-            var listeners = this._listeners;
-            var listenerArray = listeners[event.type];
-            if (listenerArray !== undefined) {
-                event.target = this;
-                var array = listenerArray.slice(0);
-                for (var i = 0, l = array.length; i < l; i++) {
-                    array[i].call(this, event);
-                }
-            }
-        };
-        return EventDispatcher;
+        Object.defineProperty(HashObject.prototype, "instanceId", {
+            get: function () {
+                return this._instanceId;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(HashObject.prototype, "instanceType", {
+            get: function () {
+                return this._instanceType;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        HashObject._object_id = 0;
+        return HashObject;
     }());
 
-    var SystemEvent = (function () {
+    var EventEmit = (function (_super) {
+        tslib.__extends(EventEmit, _super);
+        function EventEmit() {
+            var _this = _super.call(this) || this;
+            _this._emit = {};
+            return _this;
+        }
+        EventEmit.prototype.on = function (type, fn, context, once) {
+            if (context === void 0) { context = this; }
+            if (once === void 0) { once = false; }
+            if (!this._emit)
+                this._emit = {};
+            var listeners = this._emit;
+            if (!listeners[type])
+                listeners[type] = [];
+            for (var _i = 0, _a = listeners[type]; _i < _a.length; _i++) {
+                var v = _a[_i];
+                if (v.context == context && v.fn == fn) {
+                    console.log('已经添加过该事件');
+                    return v;
+                }
+            }
+            listeners[type].unshift(new EE(fn, context, once));
+        };
+        EventEmit.prototype.hasEvent = function (type) {
+            return (!this._emit) ? false : !!this._emit[type];
+        };
+        EventEmit.prototype.off = function (type, fn, context) {
+            if (context === void 0) { context = this; }
+            if (!this._emit)
+                return;
+            var listeners = this._emit;
+            var listenerArray = listeners[type];
+            if (listenerArray) {
+                for (var i = listenerArray.length - 1; i >= 0; i--) {
+                    if (listenerArray[i].fn == fn && listenerArray[i].context == context) {
+                        listenerArray.splice(i, 1);
+                    }
+                }
+            }
+        };
+        EventEmit.prototype.offAll = function () {
+            if (!this._emit)
+                return;
+            for (var key in this._emit) {
+                delete this._emit[key];
+            }
+        };
+        EventEmit.prototype.offByType = function (type) {
+            if (!this._emit || !this._emit[type])
+                return;
+            this._emit[type].length = 0;
+        };
+        EventEmit.prototype.emit = function (type, data) {
+            if (!this._emit || !this._emit[type])
+                return;
+            var listeners = this._emit;
+            var listenerArray = listeners[type];
+            for (var i = listenerArray.length - 1; i >= 0; i--) {
+                var ee = listenerArray[i];
+                ee.fn.call(ee.context, data);
+            }
+        };
+        EventEmit.prototype.destroy = function () {
+        };
+        return EventEmit;
+    }(HashObject));
+    var EE = (function () {
+        function EE(fn, context, once) {
+            if (once === void 0) { once = false; }
+            this.fn = fn;
+            this.context = context;
+            this.once = once;
+        }
+        return EE;
+    }());
+
+    var SystemEvent = (function (_super) {
+        tslib.__extends(SystemEvent, _super);
         function SystemEvent() {
+            return _super.call(this) || this;
         }
         return SystemEvent;
-    }());
+    }(EventEmit));
 
     (function (EventType) {
         var TouchType;
@@ -3429,30 +3483,6 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
             : src;
     }
 
-    var Object3D = (function (_super) {
-        tslib.__extends(Object3D, _super);
-        function Object3D() {
-            var _this = _super.call(this) || this;
-            _this._worldMatrix = new Matrix4();
-            _this._localMatrix = new Matrix4();
-            return _this;
-        }
-        Object3D.prototype.init = function () {
-        };
-        Object3D.prototype.update = function (dt) {
-        };
-        Object3D.prototype.render = function () {
-            this._render();
-        };
-        Object3D.prototype._render = function () {
-        };
-        Object3D.prototype.destroy = function () {
-        };
-        Object3D.prototype.onResize = function () {
-        };
-        return Object3D;
-    }(EventDispatcher));
-
     function generateUniformAccessObject(gl, uniformData) {
         var uniforms = { data: {} };
         uniforms["gl"] = gl;
@@ -3739,6 +3769,30 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         return Shader;
     }());
 
+    var Object3D = (function (_super) {
+        tslib.__extends(Object3D, _super);
+        function Object3D() {
+            var _this = _super.call(this) || this;
+            _this._worldMatrix = new Matrix4();
+            _this._localMatrix = new Matrix4();
+            return _this;
+        }
+        Object3D.prototype.init = function () {
+        };
+        Object3D.prototype.update = function (dt) {
+        };
+        Object3D.prototype.render = function () {
+            this._render();
+        };
+        Object3D.prototype._render = function () {
+        };
+        Object3D.prototype.destroy = function () {
+        };
+        Object3D.prototype.onResize = function () {
+        };
+        return Object3D;
+    }(EventEmit));
+
     var Scene = (function (_super) {
         tslib.__extends(Scene, _super);
         function Scene() {
@@ -3764,10 +3818,9 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
     exports.Box3 = Box3;
     exports.Color = Color;
     exports.Euler = Euler;
-    exports.EventDispatcher = EventDispatcher;
+    exports.EventEmit = EventEmit;
     exports.Matrix3 = Matrix3;
     exports.Matrix4 = Matrix4;
-    exports.Object3D = Object3D;
     exports.Quaternion = Quaternion;
     exports.Ray = Ray;
     exports.Scene = Scene;

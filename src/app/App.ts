@@ -108,7 +108,7 @@ class App {
 
         const canvas = this.renderer.canvas;
 
-        // canvas.addEventListener(TouchType.CLICK, this.onClick);
+        // canvas.on(TouchType.CLICK, this.onClick);
         canvas.addEventListener(TouchType.TouchStart, this.onTouchEvent);
         canvas.addEventListener(TouchType.TouchMove, this.onTouchEvent);
         canvas.addEventListener(TouchType.TouchEnd, this.onTouchEvent);

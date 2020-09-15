@@ -251,34 +251,6 @@ export  class Matrix4 {
 
 export  function mat4(m00?: number | Float32Array | number[], m01?: number, m02?: number, m03?: number, m10?: number, m11?: number, m12?: number, m13?: number, m20?: number, m21?: number, m22?: number, m23?: number, m30?: number, m31?: number, m32?: number, m33?: number): Matrix4;
 
-export  class EventDispatcher {
-    private _listeners;
-    constructor();
-    addEventListener(type: string, listener: any): void;
-    hasEventListener(type: string, listener: any): boolean;
-    removeEventListener(type: string, listener: any): void;
-    dispatchEvent(event: any): void;
-}
-
-export  class Object3D extends EventDispatcher {
-    /**
-     * 世界矩阵
-     */
-    _worldMatrix: Matrix4;
-    /**
-     * 本地矩阵
-     */
-    _localMatrix: Matrix4;
-    parent: Object3D;
-    constructor();
-    init(): void;
-    update(dt: any): void;
-    render(): void;
-    protected _render(): void;
-    destroy(): void;
-    onResize(): void;
-}
-
 export  class Camera extends Object3D {
     worldMatrixInverse: any;
     matrixWorldInverse: any;
@@ -781,7 +753,96 @@ export  class Vector2 {
 
 export  function v2(x?: number, y?: number): Vector2;
 
-export  class SystemEvent {
+export  abstract class HashObject {
+    protected _instanceId: number;
+    protected _instanceType: string;
+    protected static _object_id: number;
+    constructor();
+    /**
+     * 每一个对象都会有一个唯一的id码。
+     * @property instanceId
+     * @public
+     * @since 1.0.0
+     * @return {number}
+     * @readonly
+     * @example
+     *      //获取 对象唯一码
+     *      trace(this.instanceId);
+     */
+    get instanceId(): number;
+    /**
+     * 每一个类都有一个实例类型字符串，通过这个字符串，你能知道这个实例是从哪个类实例而来
+     * @property instanceType
+     * @since 1.0.3
+     * @public
+     * @return {string}
+     * @readonly
+     */
+    get instanceType(): string;
+    /**
+     * 销毁一个对象
+     * 销毁之前一定要从显示对象移除，否则将会出错
+     * @method destroy
+     * @since 2.0.0
+     * @public
+     * @return {void}
+     */
+    abstract destroy(): void;
+}
+
+export  class EventEmit extends HashObject {
+    private _emit;
+    constructor();
+    /**
+     * 添加监听
+     * @param {string | number} type
+     * @param {Function} fn
+     * @param context
+     * @param once
+     * @returns {EE}
+     */
+    on(type: string | number, fn: Function, context?: any, once?: boolean): EE;
+    /**
+     * 是否有此类型监听
+     * @param {string | number} type
+     * @returns {boolean}
+     */
+    hasEvent(type: string | number): boolean;
+    /**
+     * 移除监听
+     * @param {string | number} type
+     * @param {Function} fn
+     * @param context
+     */
+    off(type: string | number, fn: Function, context?: any): void;
+    /**
+     * 移除所有监听
+     */
+    offAll(): void;
+    /**
+     * 移除某一类型的所有事件
+     * @param {string | number} type
+     */
+    offByType(type: string | number): void;
+    /**
+     * 触发事件
+     * @param type
+     * @param data
+     */
+    emit(type: string | number, data?: any): void;
+    destroy(): void;
+}
+
+export class EE {
+    fn: Function;
+    context: any;
+    once: boolean;
+    constructor(fn: Function, context: any, once?: boolean);
+}
+
+export {};
+
+export  class SystemEvent extends EventEmit {
     constructor();
 }
 
@@ -821,6 +882,25 @@ export  class Touch {
 }
 
 export  function touch(x: number, y: number, id: any): Touch;
+
+export  class Object3D extends EventEmit {
+    /**
+     * 世界矩阵
+     */
+    _worldMatrix: Matrix4;
+    /**
+     * 本地矩阵
+     */
+    _localMatrix: Matrix4;
+    parent: Object3D;
+    constructor();
+    init(): void;
+    update(dt: any): void;
+    render(): void;
+    protected _render(): void;
+    destroy(): void;
+    onResize(): void;
+}
 
 export  class Scene extends Object3D {
     constructor();
@@ -865,10 +945,7 @@ export class App {
     private mainLoop;
     private onClick;
     private touches;
-    private onTouchStart;
-    private onTouchMove;
-    private onTouchEnd;
-    private onTouchCancel;
+    private onTouchEvent;
     private onResize;
     private initEvent;
 }

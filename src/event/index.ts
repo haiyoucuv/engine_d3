@@ -3,7 +3,7 @@
  * Copyright © 2020 haiyoucuv. All rights reserved.
  */
 
-export * from './EventDispatcher';
+export * from './EventEmit';
 export * from './SystemEvent';
 export * from './TouchEvent';
 

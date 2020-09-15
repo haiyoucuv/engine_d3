@@ -3,9 +3,9 @@
  * Copyright © 2020 haiyoucuv. All rights reserved.
  */
 
-import { EventDispatcher } from "./EventDispatcher";
+import { EventEmit } from "./EventEmit";
 
-export class SystemEvent extends EventDispatcher {
+export class SystemEvent extends EventEmit {
     constructor() {
         super();
     }
