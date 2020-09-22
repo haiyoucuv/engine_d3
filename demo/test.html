@@ -184,8 +184,6 @@
 
                 const viewPos = this.viewPos = hycv.v3(2, 2, -5);
 
-                this.cube = new Object3D();
-                
                 // mvp矩阵
                 const vp = this.vp = hycv.mat4();
                 vp.setPerspective(60, winSize.width / winSize.height, 1, 100);  // fov, aspect, near, far

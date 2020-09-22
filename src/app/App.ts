@@ -3,10 +3,10 @@
  * Copyright © 2020 haiyoucuv. All rights reserved.
  */
 
-import { WebGLRenderer } from "../core/WebGLRenderer";
-import { Scene } from "../scene/Scene";
+import { WebGLRenderer } from "../core";
+import { Scene } from "../scene";
 import { winSize } from "./const";
-import { EventType, Touch } from "../event/TouchEvent";
+import { EventType, Touch } from "../event";
 import TouchType = EventType.TouchType;
 
 const TouchFun = {
@@ -57,7 +57,7 @@ class App {
 
         if (this.currentScene) {
             this.currentScene.update(dt);
-            this.renderer.render(this.currentScene);
+            this.renderer.render(this.currentScene, null);
         }
 
         requestAnimationFrame(this.mainLoop);

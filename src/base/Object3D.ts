@@ -3,16 +3,16 @@
  * Copyright © 2020 haiyoucuv. All rights reserved.
  */
 
-import { EventEmit } from "../event/EventEmit";
-import { Matrix4 } from "../math/Matrix4";
-import { Vector3 } from "../math/Vector3";
-import { Euler } from "../math/Euler";
-import { Quaternion } from "../math/Quaternion";
+
+import { EventEmit } from "../event";
+import { Euler, Matrix4, Quaternion, Vector3 } from "../math";
+import { WebGLRenderer } from "../core";
 
 export class Object3D extends EventEmit {
 
     // public static defaultUp = Vector3.UP;
 
+    public isObject3D: true;
     public type = 'Object3D';
     public name = '';
 
@@ -36,6 +36,7 @@ export class Object3D extends EventEmit {
      * 世界矩阵
      */
     worldMatrix: Matrix4 = new Matrix4();
+
     /**
      * 本地矩阵
      */
@@ -44,18 +45,31 @@ export class Object3D extends EventEmit {
     constructor() {
         super();
 
-        this.quat.onChange(this.onQuatChange);
-        this.rotation.onChange(this.onRotationChange);
+        this.quat.onChange(() => {
+            this.rotation.setFromQuaternion(this.quat, undefined, false);
+        });
+
+        this.rotation.onChange(() => {
+            this.quat.setFromEuler(this.rotation, false);
+        });
+
     }
 
-    private onQuatChange = () => {
-        this.rotation.setFromQuaternion(this.quat, undefined, false);
+    public add(obj: Object3D) {
+        if (obj.parent == this) return obj;
+
+        if (obj.parent) obj.parent.remove(obj);
+
+        this.children.push(obj);
+
+        return obj;
     }
 
-    private onRotationChange = () => {
-        this.quat.setFromEuler(this.rotation, false);
+    public remove(obj: Object3D) {
+        if (!obj.parent || obj.parent != this) return;
+        const children = this.children;
+        return children.splice(children.indexOf(obj), 1);
     }
-
 
     /**
      * 跟新本地矩阵
@@ -68,10 +82,20 @@ export class Object3D extends EventEmit {
 
     }
 
+    public applyMatrix(matrix: Matrix4) {
+
+        if (this.matrixAutoUpdate) this.updateMatrix();
+
+        this.matrix.premultiply(matrix);
+
+        this.matrix.decompose(this.position, this.quat, this.scale);
+
+    }
+
     /**
      * 向下更新worldMatrix
      */
-    updateMatrixWorld(force) {
+    updateMatrixWorld(force = false) {
 
         if (this.matrixAutoUpdate) this.updateMatrix();
 
@@ -95,9 +119,9 @@ export class Object3D extends EventEmit {
 
         // update children
 
-        var children = this.children;
+        const children = this.children;
 
-        for (var i = 0, l = children.length; i < l; i++) {
+        for (let i = 0, l = children.length; i < l; i++) {
 
             children[i].updateMatrixWorld(force);
 
@@ -112,7 +136,7 @@ export class Object3D extends EventEmit {
      */
     public updateWorldMatrix(updateParents, updateChildren) {
 
-        var parent = this.parent;
+        const parent = this.parent;
 
         if (updateParents && parent !== null) {
 
@@ -136,9 +160,9 @@ export class Object3D extends EventEmit {
 
         if (updateChildren) {
 
-            var children = this.children;
+            const children = this.children;
 
-            for (var i = 0, l = children.length; i < l; i++) {
+            for (let i = 0, l = children.length; i < l; i++) {
 
                 children[i].updateWorldMatrix(false, true);
 
@@ -156,13 +180,17 @@ export class Object3D extends EventEmit {
 
     }
 
-    public render() {
-        this._render();
+    public render(renderer: WebGLRenderer) {
+        this._render(renderer);
 
-
+        const children = this.children;
+        children.forEach((child) => {
+            child.visible && child.render(renderer);
+        });
     }
 
-    protected _render() {
+    // 子类重写
+    protected _render(renderer) {
 
     }
 

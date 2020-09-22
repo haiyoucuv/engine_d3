@@ -5,3 +5,5 @@
 
 export * from './HashObject';
 export * from './Object3D';
+export * from './Geometry';
+export * from './Mesh';

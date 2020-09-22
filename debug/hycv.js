@@ -3314,280 +3314,6 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         return new Touch(x, y, id);
     }
 
-    var dpi = window.devicePixelRatio;
-    var winSize = {
-        width: window.innerWidth,
-        height: window.innerHeight
-    };
-
-    var WebGLRenderer = (function () {
-        function WebGLRenderer() {
-        }
-        Object.defineProperty(WebGLRenderer.prototype, "canvas", {
-            get: function () {
-                return this._canvas;
-            },
-            set: function (canvas) {
-                this._canvas = canvas;
-            },
-            enumerable: false,
-            configurable: true
-        });
-        Object.defineProperty(WebGLRenderer.prototype, "gl", {
-            get: function () {
-                return this._gl;
-            },
-            set: function (gl) {
-                this._gl = gl;
-            },
-            enumerable: false,
-            configurable: true
-        });
-        WebGLRenderer.prototype.init = function () {
-            var gl = this.gl;
-            gl.clearColor(0.2, 0.2, 0.2, 1.0);
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-            gl.enable(gl.BLEND);
-            gl.enable(gl.DEPTH_TEST);
-            gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-        };
-        WebGLRenderer.prototype.onResize = function () {
-            var canvas = this.canvas;
-            var dpi = window.devicePixelRatio;
-            console.log('dpi', dpi);
-            var w = winSize.width;
-            var h = winSize.height;
-            canvas.width = w * dpi;
-            canvas.height = h * dpi;
-            canvas.style.width = w + 'px';
-            canvas.style.height = h + 'px';
-            this.gl.viewport(0, 0, canvas.width, canvas.height);
-        };
-        WebGLRenderer.create = function (canvas) {
-            var renderer = new WebGLRenderer();
-            if (!canvas) {
-                renderer.canvas = document.createElement('canvas');
-            }
-            else if (typeof canvas == "string") {
-                renderer.canvas = document.getElementById(canvas);
-            }
-            else {
-                renderer.canvas = canvas;
-            }
-            var names = ["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
-            for (var _i = 0, names_1 = names; _i < names_1.length; _i++) {
-                var v = names_1[_i];
-                try {
-                    renderer.gl = renderer.canvas.getContext(v);
-                    break;
-                }
-                catch (e) {
-                }
-            }
-            if (!renderer.gl) {
-                throw 'WebGL not supported.';
-            }
-            renderer.init();
-            return renderer;
-        };
-        WebGLRenderer.prototype.render = function (scene) {
-        };
-        return WebGLRenderer;
-    }());
-
-    var _a;
-    var TouchType = exports.EventType.TouchType;
-    var TouchFun = (_a = {},
-        _a[TouchType.CLICK] = 'onClick',
-        _a[TouchType.TouchStart] = 'onTouchStart',
-        _a[TouchType.TouchMove] = 'onTouchMove',
-        _a[TouchType.TouchEnd] = 'onTouchEnd',
-        _a[TouchType.TouchCancel] = 'onTouchCancel',
-        _a);
-    var App = (function () {
-        function App() {
-            var _this = this;
-            this._lt = Date.now();
-            this.mainLoop = function () {
-                var now = Date.now();
-                var dt = (now - _this._lt) / 1000;
-                _this._lt = now;
-                if (_this.currentScene) {
-                    _this.currentScene.update(dt);
-                    _this.renderer.render(_this.currentScene);
-                }
-                requestAnimationFrame(_this.mainLoop);
-            };
-            this.onClick = function (e) {
-                console.log('onClick', e);
-            };
-            this.touches = {};
-            this.onTouchEvent = function (e) {
-                var type = e.type;
-                var points = [e.changedTouches[0]];
-                var body = document.body;
-                var canvasRect = _this.renderer.canvas.getBoundingClientRect();
-                var adjustX = canvasRect.left - (body.scrollLeft || window.scrollX || 0);
-                var adjustY = canvasRect.top - (body.scrollTop || window.scrollY || 0);
-                var updateTouch = (type == 'touchstart')
-                    ? function (x, y, id) { return _this.touches[id] = new Touch(x, y, id); }
-                    : function (x, y, id) { return _this.touches[id].setTouchInfo(x, y); };
-                var onFunc = TouchFun[type];
-                points.forEach(function (value) {
-                    var x = (value.clientX - adjustX) * window.devicePixelRatio;
-                    var y = (value.clientY - adjustY) * window.devicePixelRatio;
-                    var id = "t" + value.identifier;
-                    updateTouch(x, y, id);
-                    _this.currentScene[onFunc](_this.touches[id]);
-                });
-            };
-            this.onResize = function () {
-                winSize.width = window.innerWidth;
-                winSize.height = window.innerHeight;
-                _this.renderer.onResize();
-                _this.currentScene && _this.currentScene.onResize();
-            };
-            this.renderer = WebGLRenderer.create();
-            document.body.appendChild(this.renderer.canvas);
-            this.onResize();
-            this.initEvent();
-            this.mainLoop();
-        }
-        Object.defineProperty(App.prototype, "currentScene", {
-            get: function () {
-                return this._currentScene;
-            },
-            set: function (scene) {
-                this._currentScene = scene;
-            },
-            enumerable: false,
-            configurable: true
-        });
-        App.create = function () {
-            return new App();
-        };
-        App.prototype.initEvent = function () {
-            window.addEventListener('resize', this.onResize);
-            var canvas = this.renderer.canvas;
-            canvas.addEventListener(TouchType.TouchStart, this.onTouchEvent);
-            canvas.addEventListener(TouchType.TouchMove, this.onTouchEvent);
-            canvas.addEventListener(TouchType.TouchEnd, this.onTouchEvent);
-            canvas.addEventListener(TouchType.TouchCancel, this.onTouchEvent);
-        };
-        return App;
-    }());
-    var app = App.create();
-
-    var Director = (function () {
-        function Director() {
-        }
-        Director.create = function () {
-            return new Director();
-        };
-        Object.defineProperty(Director.prototype, "currentScene", {
-            get: function () {
-                return app.currentScene;
-            },
-            enumerable: false,
-            configurable: true
-        });
-        Director.prototype.changeScene = function (scene) {
-            var oldScene = this.currentScene;
-            app.currentScene = scene;
-            app.currentScene.init();
-            oldScene && oldScene.destroy();
-        };
-        return Director;
-    }());
-    var director = Director.create();
-
-    var Object3D = (function (_super) {
-        tslib.__extends(Object3D, _super);
-        function Object3D() {
-            var _this = _super.call(this) || this;
-            _this.type = 'Object3D';
-            _this.name = '';
-            _this.parent = null;
-            _this.children = [];
-            _this.up = Vector3.UP;
-            _this.position = Vector3.ZERO;
-            _this.rotation = new Euler();
-            _this.quat = new Quaternion();
-            _this.scale = Vector3.ONE;
-            _this.alpha = 1;
-            _this.visible = true;
-            _this.worldMatrixNeedsUpdate = false;
-            _this.matrixAutoUpdate = true;
-            _this.worldMatrix = new Matrix4();
-            _this.matrix = new Matrix4();
-            _this.onQuatChange = function () {
-                _this.rotation.setFromQuaternion(_this.quat, undefined, false);
-            };
-            _this.onRotationChange = function () {
-                _this.quat.setFromEuler(_this.rotation, false);
-            };
-            _this.quat.onChange(_this.onQuatChange);
-            _this.rotation.onChange(_this.onRotationChange);
-            return _this;
-        }
-        Object3D.prototype.updateMatrix = function () {
-            this.matrix.compose(this.position, this.quat, this.scale);
-            this.worldMatrixNeedsUpdate = true;
-        };
-        Object3D.prototype.updateMatrixWorld = function (force) {
-            if (this.matrixAutoUpdate)
-                this.updateMatrix();
-            if (this.worldMatrixNeedsUpdate || force) {
-                if (this.parent === null) {
-                    this.worldMatrix.copy(this.matrix);
-                }
-                else {
-                    this.worldMatrix.multiplyMatrices(this.parent.worldMatrix, this.matrix);
-                }
-                this.worldMatrixNeedsUpdate = false;
-                force = true;
-            }
-            var children = this.children;
-            for (var i = 0, l = children.length; i < l; i++) {
-                children[i].updateMatrixWorld(force);
-            }
-        };
-        Object3D.prototype.updateWorldMatrix = function (updateParents, updateChildren) {
-            var parent = this.parent;
-            if (updateParents && parent !== null) {
-                parent.updateWorldMatrix(true, false);
-            }
-            if (this.matrixAutoUpdate)
-                this.updateMatrix();
-            if (this.parent === null) {
-                this.worldMatrix.copy(this.matrix);
-            }
-            else {
-                this.worldMatrix.multiplyMatrices(this.parent.worldMatrix, this.matrix);
-            }
-            if (updateChildren) {
-                var children = this.children;
-                for (var i = 0, l = children.length; i < l; i++) {
-                    children[i].updateWorldMatrix(false, true);
-                }
-            }
-        };
-        Object3D.prototype.init = function () {
-        };
-        Object3D.prototype.update = function (dt) {
-        };
-        Object3D.prototype.render = function () {
-            this._render();
-        };
-        Object3D.prototype._render = function () {
-        };
-        Object3D.prototype.destroy = function () {
-        };
-        Object3D.prototype.onResize = function () {
-        };
-        return Object3D;
-    }(EventEmit));
-
     function loadShader(gl, type, source) {
         var shader = gl.createShader(type);
         if (shader == null) {
@@ -3794,15 +3520,18 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         };
         Attribute.prototype.enable = function () {
             this.gl.enableVertexAttribArray(this.location);
+            return this;
         };
         Attribute.prototype.disable = function () {
             this.gl.disableVertexAttribArray(this.location);
+            return this;
         };
         Attribute.prototype.bind = function (bufferData) {
             bufferData && (this._bufferData = bufferData);
             var gl = this.gl;
             gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
             gl.bufferData(gl.ARRAY_BUFFER, this._bufferData, gl.STATIC_DRAW);
+            return this;
         };
         Attribute.prototype.pointer = function (type, normalized, stride, start) {
             if (type === void 0) { type = this.gl.FLOAT; }
@@ -3810,6 +3539,7 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
             if (stride === void 0) { stride = 0; }
             if (start === void 0) { start = 0; }
             this.gl.vertexAttribPointer(this.location, this.size, type, normalized, stride, start);
+            return this;
         };
         return Attribute;
     }());
@@ -3917,6 +3647,387 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
         return Shader;
     }());
 
+    var BASE_SHADER = {
+        VERTEX: "attribute vec3 pos;\n        attribute vec3 color;\n        attribute vec3 normal;// \u6CD5\u5411\u91CF\n        \n        uniform mat4 normalMat;// \u6CD5\u7EBF\u77E9\u9635\n        \n        uniform mat4 vp;// vp\n        uniform mat4 model;// m\n        \n        varying vec3 v_normal;\n        varying vec4 v_pos;\n        varying vec3 v_color;\n        \n        void main(){\n            \n            vec4 fragPos = model * vec4(pos, 1.0);// \u9876\u70B9\u4F4D\u7F6E\n            gl_Position = vp * fragPos;\n            \n            v_pos = fragPos;\n            v_color = color;\n            \n            // \u5149\u7EBF\u548C\u6CD5\u5411\u91CF\u5173\u7CFB\n            v_normal = normalize(mat3(normalMat) * normal);// \u5F52\u4E00\u5316\n        \n        }",
+        FRAG: "precision mediump float;\n        \n        varying vec3 v_normal;\n        varying vec4 v_pos;\n        varying vec3 v_color;\n        \n        uniform float alpha;// \u900F\u660E\u5EA6\n        \n        uniform vec3 lightColor;// \u5149\u7167\u989C\u8272\n        uniform vec3 lightPos;// \u5149\u7167\u65B9\u5411\n        \n        uniform vec3 viewPos;// \u6444\u50CF\u673A\u4F4D\u7F6E\n        \n        float ambientStrength = 0.1;// \u73AF\u5883\u5149\u5F3A\u5EA6\n        float specularStrength = 0.5;// \u955C\u9762\u5149\u5F3A\u5EA6\n        \n        void main(){\n            vec3 lightDir = normalize(lightPos - v_pos.xyz);// \u8BA1\u7B97\u5149\u7EBF\u65B9\u5411\n            \n            // \u8BA1\u7B97\u6F2B\u53CD\u5C04\n            float nDotL = max(dot(lightDir, v_normal), 0.0);// \u8BA1\u7B97\u6F2B\u53CD\u5C04\u5F3A\u5EA6\n            vec3 diffuse = lightColor * nDotL;// \u8BA1\u7B97\u6F2B\u53CD\u5C04\n            \n            // \u8BA1\u7B97\u955C\u9762\u53CD\u5C04\n            vec3 viewDir = normalize(viewPos - vec3(v_pos));// \u8BA1\u7B97\u89C2\u5BDF\u65B9\u5411\u5411\u91CF\n            vec3 reflectDir = reflect(-lightDir, v_normal);// \u8BA1\u7B97\u53CD\u5C04\u65B9\u5411\u5411\u91CF\n            // \u8BA1\u7B97\u955C\u9762\u5206\u91CF\n            float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);\n            vec3 specular = specularStrength * spec * lightColor;\n            \n            // \u8BA1\u7B97\u6700\u7EC8\u989C\u8272\n            vec3 result = (ambientStrength + diffuse + specular) * v_color;\n            \n            gl_FragColor = vec4(result, alpha);\n        }"
+    };
+
+    var WebGLRenderer = (function () {
+        function WebGLRenderer() {
+            this.meshes = [];
+        }
+        Object.defineProperty(WebGLRenderer.prototype, "canvas", {
+            get: function () {
+                return this._canvas;
+            },
+            set: function (canvas) {
+                this._canvas = canvas;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(WebGLRenderer.prototype, "gl", {
+            get: function () {
+                return this._gl;
+            },
+            set: function (gl) {
+                this._gl = gl;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        WebGLRenderer.prototype.init = function () {
+            var gl = this.gl;
+            gl.clearColor(0.2, 0.2, 0.2, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+            gl.enable(gl.BLEND);
+            gl.enable(gl.DEPTH_TEST);
+            gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+            this.shader = new Shader(this.gl, BASE_SHADER.VERTEX, BASE_SHADER.FRAG);
+            this.shader.use();
+        };
+        WebGLRenderer.prototype.onResize = function () {
+            var canvas = this.canvas;
+            var dpi = window.devicePixelRatio;
+            console.log('dpi', dpi);
+            var w = winSize.width;
+            var h = winSize.height;
+            canvas.width = w * dpi;
+            canvas.height = h * dpi;
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
+            this.gl.viewport(0, 0, canvas.width, canvas.height);
+        };
+        WebGLRenderer.create = function (canvas) {
+            var renderer = new WebGLRenderer();
+            if (!canvas) {
+                renderer.canvas = document.createElement('canvas');
+            }
+            else if (typeof canvas == "string") {
+                renderer.canvas = document.getElementById(canvas);
+            }
+            else {
+                renderer.canvas = canvas;
+            }
+            var names = ["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
+            for (var _i = 0, names_1 = names; _i < names_1.length; _i++) {
+                var v = names_1[_i];
+                try {
+                    renderer.gl = renderer.canvas.getContext(v);
+                    break;
+                }
+                catch (e) {
+                }
+            }
+            if (!renderer.gl) {
+                throw 'WebGL not supported.';
+            }
+            renderer.init();
+            return renderer;
+        };
+        WebGLRenderer.prototype.render = function (scene, camera) {
+            scene.updateMatrixWorld();
+            scene.render(this);
+            this._render(scene, camera);
+        };
+        WebGLRenderer.prototype.addRenderMesh = function (mesh) {
+            this.meshes.push(mesh);
+        };
+        WebGLRenderer.prototype._render = function (scene, camera) {
+            var _this = this;
+            var shader = this.shader;
+            var gl = this.gl;
+            this.meshes.forEach(function (mesh) {
+                var _a = mesh.geometry, vertices = _a.vertices, indices = _a.indices, uvs = _a.uvs, normals = _a.normals, colors = _a.colors;
+                shader.attributes.pos.bind(vertices).pointer();
+                shader.attributes.color.bind(colors).pointer();
+                shader.attributes.normal.bind(normals).pointer();
+                shader.uniforms.alpha = mesh.alpha;
+                shader.uniforms.lightColor = color().toArray();
+                var lightPos = v3(2, 2, -5);
+                shader.uniforms.lightPos = lightPos.toArray();
+                var viewPos = v3(2, 2, -5);
+                var vp = mat4();
+                vp.setPerspective(60, winSize.width / winSize.height, 1, 100);
+                vp.multiply(mat4().setLookAt(viewPos, v3(), v3(0, 1, 0)));
+                shader.uniforms.vp = vp.toArray();
+                var model = mesh.worldMatrix;
+                shader.uniforms.model = model.toArray();
+                var normalMat = model.clone().invert().transpose();
+                _this.shader.uniforms.normalMat = normalMat.toArray();
+                _this.shader.uniforms.viewPos = viewPos.toArray();
+                var indexBuffer = mesh.geometry.indexBuffer;
+                if (!indexBuffer) {
+                    mesh.geometry.indexBuffer = indexBuffer = gl.createBuffer();
+                }
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+                gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+                gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_BYTE, 0);
+            });
+            this.meshes.length = 0;
+        };
+        return WebGLRenderer;
+    }());
+
+    var dpi = window.devicePixelRatio;
+    var winSize = {
+        width: window.innerWidth,
+        height: window.innerHeight
+    };
+
+    var _a;
+    var TouchType = exports.EventType.TouchType;
+    var TouchFun = (_a = {},
+        _a[TouchType.CLICK] = 'onClick',
+        _a[TouchType.TouchStart] = 'onTouchStart',
+        _a[TouchType.TouchMove] = 'onTouchMove',
+        _a[TouchType.TouchEnd] = 'onTouchEnd',
+        _a[TouchType.TouchCancel] = 'onTouchCancel',
+        _a);
+    var App = (function () {
+        function App() {
+            var _this = this;
+            this._lt = Date.now();
+            this.mainLoop = function () {
+                var now = Date.now();
+                var dt = (now - _this._lt) / 1000;
+                _this._lt = now;
+                if (_this.currentScene) {
+                    _this.currentScene.update(dt);
+                    _this.renderer.render(_this.currentScene, null);
+                }
+                requestAnimationFrame(_this.mainLoop);
+            };
+            this.onClick = function (e) {
+                console.log('onClick', e);
+            };
+            this.touches = {};
+            this.onTouchEvent = function (e) {
+                var type = e.type;
+                var points = [e.changedTouches[0]];
+                var body = document.body;
+                var canvasRect = _this.renderer.canvas.getBoundingClientRect();
+                var adjustX = canvasRect.left - (body.scrollLeft || window.scrollX || 0);
+                var adjustY = canvasRect.top - (body.scrollTop || window.scrollY || 0);
+                var updateTouch = (type == 'touchstart')
+                    ? function (x, y, id) { return _this.touches[id] = new Touch(x, y, id); }
+                    : function (x, y, id) { return _this.touches[id].setTouchInfo(x, y); };
+                var onFunc = TouchFun[type];
+                points.forEach(function (value) {
+                    var x = (value.clientX - adjustX) * window.devicePixelRatio;
+                    var y = (value.clientY - adjustY) * window.devicePixelRatio;
+                    var id = "t" + value.identifier;
+                    updateTouch(x, y, id);
+                    _this.currentScene[onFunc](_this.touches[id]);
+                });
+            };
+            this.onResize = function () {
+                winSize.width = window.innerWidth;
+                winSize.height = window.innerHeight;
+                _this.renderer.onResize();
+                _this.currentScene && _this.currentScene.onResize();
+            };
+            this.renderer = WebGLRenderer.create();
+            document.body.appendChild(this.renderer.canvas);
+            this.onResize();
+            this.initEvent();
+            this.mainLoop();
+        }
+        Object.defineProperty(App.prototype, "currentScene", {
+            get: function () {
+                return this._currentScene;
+            },
+            set: function (scene) {
+                this._currentScene = scene;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        App.create = function () {
+            return new App();
+        };
+        App.prototype.initEvent = function () {
+            window.addEventListener('resize', this.onResize);
+            var canvas = this.renderer.canvas;
+            canvas.addEventListener(TouchType.TouchStart, this.onTouchEvent);
+            canvas.addEventListener(TouchType.TouchMove, this.onTouchEvent);
+            canvas.addEventListener(TouchType.TouchEnd, this.onTouchEvent);
+            canvas.addEventListener(TouchType.TouchCancel, this.onTouchEvent);
+        };
+        return App;
+    }());
+    var app = App.create();
+
+    var Director = (function () {
+        function Director() {
+        }
+        Director.create = function () {
+            return new Director();
+        };
+        Object.defineProperty(Director.prototype, "currentScene", {
+            get: function () {
+                return app.currentScene;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Director.prototype.changeScene = function (scene) {
+            var oldScene = this.currentScene;
+            app.currentScene = scene;
+            app.currentScene.init();
+            oldScene && oldScene.destroy();
+        };
+        return Director;
+    }());
+    var director = Director.create();
+
+    var Object3D = (function (_super) {
+        tslib.__extends(Object3D, _super);
+        function Object3D() {
+            var _this = _super.call(this) || this;
+            _this.type = 'Object3D';
+            _this.name = '';
+            _this.parent = null;
+            _this.children = [];
+            _this.up = Vector3.UP;
+            _this.position = Vector3.ZERO;
+            _this.rotation = new Euler();
+            _this.quat = new Quaternion();
+            _this.scale = Vector3.ONE;
+            _this.alpha = 1;
+            _this.visible = true;
+            _this.worldMatrixNeedsUpdate = false;
+            _this.matrixAutoUpdate = true;
+            _this.worldMatrix = new Matrix4();
+            _this.matrix = new Matrix4();
+            _this.quat.onChange(function () {
+                _this.rotation.setFromQuaternion(_this.quat, undefined, false);
+            });
+            _this.rotation.onChange(function () {
+                _this.quat.setFromEuler(_this.rotation, false);
+            });
+            return _this;
+        }
+        Object3D.prototype.add = function (obj) {
+            if (obj.parent == this)
+                return obj;
+            if (obj.parent)
+                obj.parent.remove(obj);
+            this.children.push(obj);
+            return obj;
+        };
+        Object3D.prototype.remove = function (obj) {
+            if (!obj.parent || obj.parent != this)
+                return;
+            var children = this.children;
+            return children.splice(children.indexOf(obj), 1);
+        };
+        Object3D.prototype.updateMatrix = function () {
+            this.matrix.compose(this.position, this.quat, this.scale);
+            this.worldMatrixNeedsUpdate = true;
+        };
+        Object3D.prototype.applyMatrix = function (matrix) {
+            if (this.matrixAutoUpdate)
+                this.updateMatrix();
+            this.matrix.premultiply(matrix);
+            this.matrix.decompose(this.position, this.quat, this.scale);
+        };
+        Object3D.prototype.updateMatrixWorld = function (force) {
+            if (force === void 0) { force = false; }
+            if (this.matrixAutoUpdate)
+                this.updateMatrix();
+            if (this.worldMatrixNeedsUpdate || force) {
+                if (this.parent === null) {
+                    this.worldMatrix.copy(this.matrix);
+                }
+                else {
+                    this.worldMatrix.multiplyMatrices(this.parent.worldMatrix, this.matrix);
+                }
+                this.worldMatrixNeedsUpdate = false;
+                force = true;
+            }
+            var children = this.children;
+            for (var i = 0, l = children.length; i < l; i++) {
+                children[i].updateMatrixWorld(force);
+            }
+        };
+        Object3D.prototype.updateWorldMatrix = function (updateParents, updateChildren) {
+            var parent = this.parent;
+            if (updateParents && parent !== null) {
+                parent.updateWorldMatrix(true, false);
+            }
+            if (this.matrixAutoUpdate)
+                this.updateMatrix();
+            if (this.parent === null) {
+                this.worldMatrix.copy(this.matrix);
+            }
+            else {
+                this.worldMatrix.multiplyMatrices(this.parent.worldMatrix, this.matrix);
+            }
+            if (updateChildren) {
+                var children = this.children;
+                for (var i = 0, l = children.length; i < l; i++) {
+                    children[i].updateWorldMatrix(false, true);
+                }
+            }
+        };
+        Object3D.prototype.init = function () {
+        };
+        Object3D.prototype.update = function (dt) {
+        };
+        Object3D.prototype.render = function (renderer) {
+            this._render(renderer);
+            var children = this.children;
+            children.forEach(function (child) {
+                child.visible && child.render(renderer);
+            });
+        };
+        Object3D.prototype._render = function (renderer) {
+        };
+        Object3D.prototype.destroy = function () {
+        };
+        Object3D.prototype.onResize = function () {
+        };
+        return Object3D;
+    }(EventEmit));
+
+    var Geometry = (function (_super) {
+        tslib.__extends(Geometry, _super);
+        function Geometry(vertices, indices, normals, uvs, colors) {
+            if (normals === void 0) { normals = new Float32Array(vertices.length); }
+            if (uvs === void 0) { uvs = new Float32Array(vertices.length / 3 * 2); }
+            if (colors === void 0) { colors = new Float32Array(vertices.length)
+                .map(function () {
+                return 1;
+            }); }
+            var _this = _super.call(this) || this;
+            _this.vertices = vertices;
+            _this.normals = normals;
+            _this.uvs = uvs;
+            _this.colors = colors;
+            _this._instanceType = "Geometry";
+            _this.indices = indices ? new Uint8Array(indices) : null;
+            return _this;
+        }
+        Geometry.prototype.destroy = function () {
+        };
+        return Geometry;
+    }(HashObject));
+
+    var Mesh = (function (_super) {
+        tslib.__extends(Mesh, _super);
+        function Mesh(geometry) {
+            var _this = _super.call(this) || this;
+            _this.geometry = geometry;
+            return _this;
+        }
+        Mesh.prototype._render = function (renderer) {
+            renderer.addRenderMesh(this);
+        };
+        return Mesh;
+    }(Object3D));
+
     var Scene = (function (_super) {
         tslib.__extends(Scene, _super);
         function Scene() {
@@ -3943,9 +4054,11 @@ var tslib = {__extends: __extends,__assign: __assign,__rest: __rest,__decorate: 
     exports.Color = Color;
     exports.Euler = Euler;
     exports.EventEmit = EventEmit;
+    exports.Geometry = Geometry;
     exports.HashObject = HashObject;
     exports.Matrix3 = Matrix3;
     exports.Matrix4 = Matrix4;
+    exports.Mesh = Mesh;
     exports.Object3D = Object3D;
     exports.Quaternion = Quaternion;
     exports.Ray = Ray;

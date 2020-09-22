@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="full-screen" content="true" />
+    <meta name="screen-orientation" content="portrait" />
+    <meta name="x5-fullscreen" content="true" />
+    <meta name="360-fullscreen" content="true" />
+    
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <!-- <div style="height: 100px"></div>-->
+    <!-- 帧率检测 -->
+    <script src="lib/stats.js"></script>
+    
+    <script src="../debug/hycv.js"></script>
+    <!-- <script src="lib/cuon-matrix.js"></script>-->
+    
+    <script>
+        
+        const Scene = hycv.Scene;
+        const Shader = hycv.Shader;
+        const Object3D = hycv.Mesh;
+        const Geometry = hycv.Geometry;
+        const Mesh = hycv.Mesh;
+        const winSize = hycv.winSize;
+        
+        class testScene extends Scene {
+            constructor() {
+                super();
+            }
+            
+            isPause = false;
+            
+            init() {
+                super.init();
+                
+                // 顶点数据
+                const vertex = new Float32Array([
+                    0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5,  // v0-v1-v2-v3 front
+                    0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5,  // v0-v3-v4-v5 right
+                    0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5,  // v0-v5-v6-v1 up
+                    -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5,  // v1-v6-v7-v2 left
+                    -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5,  // v7-v4-v3-v2 down
+                    0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5   // v4-v7-v6-v5 back
+                ]);
+                
+                // 颜色
+                const color = new Float32Array([
+                    0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0,  // v0-v1-v2-v3 front(blue)
+                    0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, // v0-v3-v4-v5 right(green)
+                    1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, 1.0, 0.4, 0.4, // v0-v5-v6-v1 up(red)
+                    1.0, 1.0, 0.4, 1.0, 1.0, 0.4, 1.0, 1.0, 0.4, 1.0, 1.0, 0.4, // v1-v6-v7-v2 left
+                    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, // v7-v4-v3-v2 down
+                    0.4, 1.0, 1.0, 0.4, 1.0, 1.0, 0.4, 1.0, 1.0, 0.4, 1.0, 1.0, // v4-v7-v6-v5 back
+                ]);
+                
+                // 法向量
+                const normal = new Float32Array([    // Normal
+                    0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0,  // v0-v1-v2-v3 front
+                    1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,  // v0-v3-v4-v5 right
+                    0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,  // v0-v5-v6-v1 up
+                    -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0,  // v1-v6-v7-v2 left
+                    0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0,  // v7-v4-v3-v2 down
+                    0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0   // v4-v7-v6-v5 back
+                ]);
+                
+                // index
+                const indices = this.indices = new Uint8Array([
+                    0, 1, 2, 0, 2, 3,    // front
+                    4, 5, 6, 4, 6, 7,    // right
+                    8, 9, 10, 8, 10, 11,    // up
+                    12, 13, 14, 12, 14, 15,    // left
+                    16, 17, 18, 16, 18, 19,    // down
+                    20, 21, 22, 20, 22, 23     // back
+                ]);
+                
+                let geometry = new Geometry(vertex, indices, normal, null, color);
+                this.mesh = new Mesh(geometry);
+                this.add(this.mesh);
+                
+                this.mesh.alpha = 0.1;
+                
+                // // 设置光照颜色
+                // shader.uniforms.lightColor = hycv.color().toArray();
+                //
+                // // 设置光照方向
+                // const lightPos = hycv.v3(2, 2, -5);
+                // shader.uniforms.lightPos = lightPos.toArray();
+                
+                // const viewPos = this.viewPos = hycv.v3(2, 2, -5);
+                
+                // mvp矩阵
+                // const vp = this.vp = hycv.mat4();
+                // vp.setPerspective(60, winSize.width / winSize.height, 1, 100);  // fov, aspect, near, far
+                // vp.multiply(hycv.mat4().setLookAt(viewPos, hycv.v3(), hycv.v3(0, 1, 0)));
+                // shader.uniforms.vp = vp.toArray();
+                
+                // 模型矩阵
+                // this.model = hycv.mat4();
+                // shader.uniforms.model = this.model.toArray();
+            }
+            
+            onClick(e) {
+            
+            }
+            
+            pause() {
+                this.isPause = !this.isPause;
+            }
+            
+            onTouchStart(t) {
+                super.onTouchStart(t);
+            }
+            
+            onTouchMove(t) {
+                super.onTouchMove(t);
+                const delta = t.delta;
+                this.mesh.rotation.x += delta.x / 200;
+                this.mesh.rotation.y += delta.y / 200;
+            }
+            
+            update(dt) {
+                super.update(dt);
+                
+                if (this.isPause) return;
+                
+                this.mesh.rotation.x += dt / 2;
+                this.mesh.rotation.y += dt / 2;
+                this.mesh.rotation.z += dt / 2;
+                
+            }
+            
+            destroy() {
+                super.destroy();
+            }
+            
+            onResize() {
+                // const vp = this.vp = hycv.mat4();
+                // vp.setPerspective(70, winSize.width / winSize.height, 1, 100);  // fov, aspect, near, far
+                // vp.multiply(hycv.mat4().setLookAt(this.viewPos, hycv.v3(), hycv.v3(0, 1, 0)));
+                // this.shader.uniforms.vp = vp.toArray();
+                // this.vp.setPerspective(70, winSize.width / winSize.height, 1, 100);  // fov, aspect, near, far
+            }
+        }
+        
+        hycv.director.changeScene(new testScene());
+    
+    </script>
+
+
+</body>
+</html>

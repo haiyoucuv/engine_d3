@@ -53,10 +53,14 @@ export class Attribute {
 
     public enable() {
         this.gl.enableVertexAttribArray(this.location);
+
+        return this;
     }
 
     public disable() {
         this.gl.disableVertexAttribArray(this.location);
+
+        return this;
     }
 
     public bind(bufferData) {
@@ -64,10 +68,14 @@ export class Attribute {
         const gl = this.gl;
         gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
         gl.bufferData(gl.ARRAY_BUFFER, this._bufferData, gl.STATIC_DRAW);
+
+        return this;
     }
 
     public pointer(type = this.gl.FLOAT, normalized = false, stride = 0, start = 0) {
         this.gl.vertexAttribPointer(this.location, this.size, type, normalized, stride, start);
+
+        return this;
     }
 
 }

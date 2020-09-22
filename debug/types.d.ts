@@ -340,47 +340,213 @@ export class EE {
 
 export {};
 
-export  enum RotationOrders {
-    XYZ = "XYZ",
-    YZX = "YZX",
-    ZXY = "ZXY",
-    XZY = "XZY",
-    YXZ = "YXZ",
-    ZYX = "ZYX"
+export  class SystemEvent extends EventEmit {
+    constructor();
 }
 
-export  class Euler {
-    private _x;
-    private _y;
-    private _z;
-    private _order;
-    constructor(_x?: number, _y?: number, _z?: number, _order?: RotationOrders);
-    get x(): number;
-    set x(value: number);
-    get y(): number;
-    set y(value: number);
-    get z(): number;
-    set z(value: number);
-    get order(): RotationOrders;
-    set order(value: RotationOrders);
-    set(x: any, y: any, z: any, order: any): this;
-    clone(): Euler;
-    copy(euler: Euler): this;
-    setFromRotationMatrix(m: Matrix4, order: RotationOrders, update?: boolean): this;
-    setFromQuaternion(q: Quaternion, order: any, update?: boolean): this;
-    setFromVector3(v: any, order: RotationOrders): this;
-    reorder(newOrder: any): this;
-    equals(euler: any): boolean;
-    fromArray(array: any): this;
+export  class Vector2 {
+    x: number;
+    y: number;
+    constructor(x?: number, y?: number);
+    set(x: number, y: number): this;
+    copy(v: Vector2): this;
+    clone(): Vector2;
+    add(v: any): this;
+    addScalar(s: any): this;
+    addVectors(a: any, b: any): this;
+    addScaledVector(v: any, s: any): this;
+    sub(v: any): this;
+    subScalar(s: any): this;
+    subVectors(a: any, b: any): this;
+    multiply(v: any): this;
+    multiplyScalar(scalar: any): this;
+    divide(v: any): this;
+    divideScalar(scalar: any): this;
+    applyMatrix3(m: any): this;
+    dot(v: any): number;
+    cross(v: any): number;
+    lengthSq(): number;
+    length(): number;
+    manhattanLength(): number;
+    normalize(): this;
+    angle(): number;
+    distanceTo(v: any): number;
+    distanceToSquared(v: any): number;
+    manhattanDistanceTo(v: any): number;
+    setLength(length: any): this;
+    lerp(v: any, alpha: any): this;
+    lerpVectors(v1: any, v2: any, alpha: any): this;
+    equals(v: any): boolean;
+    fromArray(array: any, offset?: number): this;
     toArray(array?: any[], offset?: number): any[];
-    toVector3(optionalResult: any): any;
-    onChange(callback: any): this;
-    onChangeCallback(): void;
 }
 
-export  function euler(x?: number, y?: number, z?: number, order?: RotationOrders): Euler;
+export  function v2(x?: number, y?: number): Vector2;
+
+export  namespace EventType {
+    enum TouchType {
+        CLICK = "click",
+        TouchStart = "touchstart",
+        TouchMove = "touchmove",
+        TouchEnd = "touchend",
+        TouchCancel = "touchcancel"
+    }
+}
+
+export  class Touch {
+    private _id;
+    private startPoint;
+    private point;
+    private prevPoint;
+    constructor(x: number, y: number, id: any);
+    setTouchInfo(x: any, y: any): void;
+    get location(): Vector2;
+    get locationX(): number;
+    get locationY(): number;
+    getLocation(): Vector2;
+    getLocationX(): number;
+    getLocationY(): number;
+    get prevLocation(): Vector2;
+    get prevLocationX(): number;
+    get prevLocationY(): number;
+    getPrevLocation(): Vector2;
+    getPrevLocationX(): number;
+    getPrevLocationY(): number;
+    private get id();
+    getID(): any;
+    get delta(): Vector2;
+    getDelta(): Vector2;
+}
+
+export  function touch(x: number, y: number, id: any): Touch;
+
+export  function compileProgram(gl: WebGLRenderingContext, vertexSrc: string, fragmentSrc: string, attributeLocations?: any): WebGLProgram;
+
+export  function setPrecision(src: string, precision: string): string;
+
+export  class Scene extends Object3D {
+    constructor();
+    update(dt: any): void;
+    protected _render(): void;
+    onClick(t: Touch): void;
+    onTouchStart(t: Touch): void;
+    onTouchMove(t: Touch): void;
+    onTouchEnd(t: Touch): void;
+    onTouchCancel(t: Touch): void;
+}
+
+export  let dpi: number;
+
+export  const winSize: {
+    width: number;
+    height: number;
+}
+
+export  class Geometry extends HashObject {
+    vertices: Float32Array;
+    normals: Float32Array;
+    uvs: Float32Array;
+    colors: Float32Array;
+    protected _instanceType: string;
+    indices: Uint16Array;
+    constructor(vertices: Float32Array, indices?: Uint16Array, normals?: Float32Array, uvs?: Float32Array, colors?: Float32Array);
+    destroy(): void;
+}
+
+export  class Mesh extends Object3D {
+    geometry: Geometry;
+    constructor(geometry: Geometry);
+    protected _render(renderer: WebGLRenderer): void;
+}
+
+export  function generateUniformAccessObject(gl: WebGLRenderingContext, uniformData: any): {
+    data: {};
+}
+
+export  function mapType(gl: any, type: any): any;
+
+export  function mapSize(type: string): number;
+
+export  class Attribute {
+    gl: WebGLRenderingContext;
+    program: WebGLProgram;
+    name: string;
+    size: number;
+    type: string;
+    location: GLint;
+    buffer: WebGLBuffer;
+    private _bufferData;
+    set bufferData(bufferData: any);
+    get bufferData(): any;
+    private constructor();
+    static create(gl: WebGLRenderingContext, program: WebGLProgram, attribData: WebGLActiveInfo): Attribute;
+    init(): this;
+    enable(): this;
+    disable(): this;
+    bind(bufferData: any): this;
+    pointer(type?: number, normalized?: boolean, stride?: number, start?: number): this;
+}
+
+export  function extractAttributes(gl: WebGLRenderingContext, program: WebGLProgram): {};
+
+export  function defaultValue(type: string, size: number): false | any[] | Int32Array | Float32Array | 0;
+
+export  function extractUniforms(gl: WebGLRenderingContext, program: WebGLProgram): {};
+
+export  class Shader {
+    private gl;
+    private program;
+    /**
+     *  The attributes of the shader as an object containing the following properties
+     * {
+     * 	type,
+     * 	size,
+     * 	location,
+     * 	pointer
+     * }
+     * @member {Object}
+     */
+    attributes: any;
+    uniformData: any;
+    /**
+     * The uniforms of the shader as an object containing the following properties
+     * {
+     * 	gl,
+     * 	data
+     * }
+     * @member {Object}
+     */
+    uniforms: any;
+    constructor(gl: WebGLRenderingContext, vertexSrc: string, fragmentSrc: string, precision?: string, attributeLocations?: any);
+    use(): this;
+    destroy(): void;
+}
+
+export  const BASE_SHADER: {
+    VERTEX: string;
+    FRAG: string;
+}
+
+export  class WebGLRenderer {
+    _canvas: HTMLCanvasElement;
+    get canvas(): HTMLCanvasElement;
+    set canvas(canvas: HTMLCanvasElement);
+    _gl: WebGLRenderingContext;
+    get gl(): WebGLRenderingContext;
+    set gl(gl: WebGLRenderingContext);
+    shader: Shader;
+    private constructor();
+    init(): void;
+    onResize(): void;
+    static create(canvas?: HTMLCanvasElement | string): WebGLRenderer;
+    private meshes;
+    render(scene: Scene, camera: Camera): void;
+    addMesh(mesh: Mesh): void;
+    private _render;
+}
 
 export  class Object3D extends EventEmit {
+    isObject3D: true;
     type: string;
     name: string;
     parent: Object3D;
@@ -403,16 +569,17 @@ export  class Object3D extends EventEmit {
      */
     matrix: Matrix4;
     constructor();
-    private onQuatChange;
-    private onRotationChange;
+    add(obj: Object3D): Object3D;
+    remove(obj: Object3D): Object3D[];
     /**
      * 跟新本地矩阵
      */
     updateMatrix(): void;
+    applyMatrix(matrix: Matrix4): void;
     /**
      * 向下更新worldMatrix
      */
-    updateMatrixWorld(force: any): void;
+    updateMatrixWorld(force?: boolean): void;
     /**
      * 更新worldMatrix
      * @param updateParents
@@ -421,8 +588,8 @@ export  class Object3D extends EventEmit {
     updateWorldMatrix(updateParents: any, updateChildren: any): void;
     init(): void;
     update(dt: any): void;
-    render(): void;
-    protected _render(): void;
+    render(renderer: WebGLRenderer): void;
+    protected _render(renderer: any): void;
     destroy(): void;
     onResize(): void;
 }
@@ -836,6 +1003,46 @@ export  class Color {
 
 export  function color(r?: any, g?: any, b?: any): Color;
 
+export  enum RotationOrders {
+    XYZ = "XYZ",
+    YZX = "YZX",
+    ZXY = "ZXY",
+    XZY = "XZY",
+    YXZ = "YXZ",
+    ZYX = "ZYX"
+}
+
+export  class Euler {
+    private _x;
+    private _y;
+    private _z;
+    private _order;
+    constructor(_x?: number, _y?: number, _z?: number, _order?: RotationOrders);
+    get x(): number;
+    set x(value: number);
+    get y(): number;
+    set y(value: number);
+    get z(): number;
+    set z(value: number);
+    get order(): RotationOrders;
+    set order(value: RotationOrders);
+    set(x: any, y: any, z: any, order: any): this;
+    clone(): Euler;
+    copy(euler: Euler): this;
+    setFromRotationMatrix(m: Matrix4, order: RotationOrders, update?: boolean): this;
+    setFromQuaternion(q: Quaternion, order: any, update?: boolean): this;
+    setFromVector3(v: any, order: RotationOrders): this;
+    reorder(newOrder: any): this;
+    equals(euler: any): boolean;
+    fromArray(array: any): this;
+    toArray(array?: any[], offset?: number): any[];
+    toVector3(optionalResult: any): any;
+    onChange(callback: any): this;
+    onChangeCallback(): void;
+}
+
+export  function euler(x?: number, y?: number, z?: number, order?: RotationOrders): Euler;
+
 export  class Ray {
     origin: Vector3;
     direction: Vector3;
@@ -859,118 +1066,6 @@ export  class Ray {
 }
 
 export  function ray(origin?: Vector3, direction?: Vector3): Ray;
-
-export  class Vector2 {
-    x: number;
-    y: number;
-    constructor(x?: number, y?: number);
-    set(x: number, y: number): this;
-    copy(v: Vector2): this;
-    clone(): Vector2;
-    add(v: any): this;
-    addScalar(s: any): this;
-    addVectors(a: any, b: any): this;
-    addScaledVector(v: any, s: any): this;
-    sub(v: any): this;
-    subScalar(s: any): this;
-    subVectors(a: any, b: any): this;
-    multiply(v: any): this;
-    multiplyScalar(scalar: any): this;
-    divide(v: any): this;
-    divideScalar(scalar: any): this;
-    applyMatrix3(m: any): this;
-    dot(v: any): number;
-    cross(v: any): number;
-    lengthSq(): number;
-    length(): number;
-    manhattanLength(): number;
-    normalize(): this;
-    angle(): number;
-    distanceTo(v: any): number;
-    distanceToSquared(v: any): number;
-    manhattanDistanceTo(v: any): number;
-    setLength(length: any): this;
-    lerp(v: any, alpha: any): this;
-    lerpVectors(v1: any, v2: any, alpha: any): this;
-    equals(v: any): boolean;
-    fromArray(array: any, offset?: number): this;
-    toArray(array?: any[], offset?: number): any[];
-}
-
-export  function v2(x?: number, y?: number): Vector2;
-
-export  class SystemEvent extends EventEmit {
-    constructor();
-}
-
-export  namespace EventType {
-    enum TouchType {
-        CLICK = "click",
-        TouchStart = "touchstart",
-        TouchMove = "touchmove",
-        TouchEnd = "touchend",
-        TouchCancel = "touchcancel"
-    }
-}
-
-export  class Touch {
-    private _id;
-    private startPoint;
-    private point;
-    private prevPoint;
-    constructor(x: number, y: number, id: any);
-    setTouchInfo(x: any, y: any): void;
-    get location(): Vector2;
-    get locationX(): number;
-    get locationY(): number;
-    getLocation(): Vector2;
-    getLocationX(): number;
-    getLocationY(): number;
-    get prevLocation(): Vector2;
-    get prevLocationX(): number;
-    get prevLocationY(): number;
-    getPrevLocation(): Vector2;
-    getPrevLocationX(): number;
-    getPrevLocationY(): number;
-    private get id();
-    getID(): any;
-    get delta(): Vector2;
-    getDelta(): Vector2;
-}
-
-export  function touch(x: number, y: number, id: any): Touch;
-
-export  class Scene extends Object3D {
-    constructor();
-    update(dt: any): void;
-    protected _render(): void;
-    onClick(t: Touch): void;
-    onTouchStart(t: Touch): void;
-    onTouchMove(t: Touch): void;
-    onTouchEnd(t: Touch): void;
-    onTouchCancel(t: Touch): void;
-}
-
-export  let dpi: number;
-
-export  const winSize: {
-    width: number;
-    height: number;
-}
-
-export  class WebGLRenderer {
-    _canvas: HTMLCanvasElement;
-    get canvas(): HTMLCanvasElement;
-    set canvas(canvas: HTMLCanvasElement);
-    _gl: WebGLRenderingContext;
-    get gl(): WebGLRenderingContext;
-    set gl(gl: WebGLRenderingContext);
-    private constructor();
-    init(): void;
-    onResize(): void;
-    static create(canvas?: HTMLCanvasElement | string): WebGLRenderer;
-    render(scene: Scene): void;
-}
 
 export class App {
     private renderer;
@@ -1002,71 +1097,4 @@ export class Director {
 export  const director: Director;
 
 export {};
-
-export  function compileProgram(gl: WebGLRenderingContext, vertexSrc: string, fragmentSrc: string, attributeLocations?: any): WebGLProgram;
-
-export  function setPrecision(src: string, precision: string): string;
-
-export  function generateUniformAccessObject(gl: WebGLRenderingContext, uniformData: any): {
-    data: {};
-}
-
-export  function mapType(gl: any, type: any): any;
-
-export  function mapSize(type: string): number;
-
-export  class Attribute {
-    gl: WebGLRenderingContext;
-    program: WebGLProgram;
-    name: string;
-    size: number;
-    type: string;
-    location: GLint;
-    buffer: WebGLBuffer;
-    private _bufferData;
-    set bufferData(bufferData: any);
-    get bufferData(): any;
-    private constructor();
-    static create(gl: WebGLRenderingContext, program: WebGLProgram, attribData: WebGLActiveInfo): Attribute;
-    init(): this;
-    enable(): void;
-    disable(): void;
-    bind(bufferData: any): void;
-    pointer(type?: number, normalized?: boolean, stride?: number, start?: number): void;
-}
-
-export  function extractAttributes(gl: WebGLRenderingContext, program: WebGLProgram): {};
-
-export  function defaultValue(type: string, size: number): false | any[] | Int32Array | Float32Array | 0;
-
-export  function extractUniforms(gl: WebGLRenderingContext, program: WebGLProgram): {};
-
-export  class Shader {
-    private gl;
-    private program;
-    /**
-     *  The attributes of the shader as an object containing the following properties
-     * {
-     * 	type,
-     * 	size,
-     * 	location,
-     * 	pointer
-     * }
-     * @member {Object}
-     */
-    attributes: any;
-    uniformData: any;
-    /**
-     * The uniforms of the shader as an object containing the following properties
-     * {
-     * 	gl,
-     * 	data
-     * }
-     * @member {Object}
-     */
-    uniforms: any;
-    constructor(gl: WebGLRenderingContext, vertexSrc: string, fragmentSrc: string, precision?: string, attributeLocations?: any);
-    use(): this;
-    destroy(): void;
-}
 }
